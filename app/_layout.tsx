@@ -16,6 +16,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
+import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import "../global.css";
 // Import your Offline404 screen at app/Offline404.tsx
 // which shows "404" and "Vous n'êtes pas connecté à Internet"
@@ -139,19 +140,21 @@ export default function RootLayout() {
   }
 
   return (
-    <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-        <PersistGate loading={<ActivityIndicator />} persistor={persistor}>
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="index" />
-              {/* Define your Offline404 screen */}
-              <Stack.Screen name="Offline404" />
-            </Stack>
-            <Toast />
-          </GestureHandlerRootView>
-        </PersistGate>
-      </QueryClientProvider>
-    </Provider>
+    <ErrorBoundary>
+      <Provider store={store}>
+        <QueryClientProvider client={queryClient}>
+          <PersistGate loading={<ActivityIndicator />} persistor={persistor}>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="index" />
+                {/* Define your Offline404 screen */}
+                <Stack.Screen name="Offline404" />
+              </Stack>
+              <Toast />
+            </GestureHandlerRootView>
+          </PersistGate>
+        </QueryClientProvider>
+      </Provider>
+    </ErrorBoundary>
   );
 }
