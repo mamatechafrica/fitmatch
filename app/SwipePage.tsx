@@ -414,11 +414,3 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 });
-    zIndex: 100,
-  },
-  skipText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-});
