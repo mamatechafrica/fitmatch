@@ -1,6 +1,19 @@
-# Welcome to your Expo app 👋
+# FitMatch App 🏃‍♀️💪
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A React Native fitness and social matching app built with Expo.
+
+## Development Options
+
+### Option 1: GitHub Codespaces (Recommended for online development)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/mamatechafrica/fitmatch)
+
+Click the badge above or:
+1. Go to https://github.com/mamatechafrica/fitmatch
+2. Click the green "Code" button
+3. Select "Codespaces" tab
+4. Click "Create codespace on main"
+
+### Option 2: Local Development
 
 ## Get started
 
