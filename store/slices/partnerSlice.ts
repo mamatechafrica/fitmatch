@@ -4,12 +4,14 @@ import { Timestamp } from 'firebase/firestore';
 export interface PartnerData {
   id?: string;
   companyName?: string;
+  titre?: string;
   email?: string;
   contactPerson?: string;
   phone?: string;
   website?: string;
   description?: string;
   logo?: string;
+  imageUrl?: string;
   images?: string[];
   services?: string[];
   location?: {
@@ -53,13 +55,13 @@ export interface PartnerData {
 }
 
 interface PartnerState {
-  partnerData: PartnerData | null;
+  data: PartnerData | null;
   isLoading: boolean;
   error: string | null;
 }
 
 const initialState: PartnerState = {
-  partnerData: null,
+  data: null,
   isLoading: false,
   error: null,
 };
@@ -69,16 +71,16 @@ const partnerSlice = createSlice({
   initialState,
   reducers: {
     setPartnerData: (state, action: PayloadAction<PartnerData | null>) => {
-      state.partnerData = action.payload;
+      state.data = action.payload;
       state.error = null;
     },
     updatePartnerData: (state, action: PayloadAction<Partial<PartnerData>>) => {
-      if (state.partnerData) {
-        state.partnerData = { ...state.partnerData, ...action.payload };
+      if (state.data) {
+        state.data = { ...state.data, ...action.payload };
       }
     },
     resetPartnerData: (state) => {
-      state.partnerData = null;
+      state.data = null;
       state.error = null;
     },
     setPartnerLoading: (state, action: PayloadAction<boolean>) => {

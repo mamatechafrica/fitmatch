@@ -3,13 +3,22 @@ import { Timestamp } from 'firebase/firestore';
 
 export interface UserData {
   id?: string;
+  uid?: string;
   name?: string;
+  nom?: string;
+  prenoms?: string;
+  pseudo?: string;
   email?: string;
   age?: number;
+  naissance?: any; // Timestamp
   gender?: string;
   location?: string;
   profilePicture?: string;
+  profilePicUrl?: string;
   bio?: string;
+  verified?: boolean;
+  totalPoints?: number;
+  percentage?: number;
   sports?: string[];
   goals?: string[];
   availability?: string[];
@@ -42,13 +51,13 @@ export interface UserData {
 }
 
 interface UserState {
-  userData: UserData | null;
+  data: UserData | null;
   isLoading: boolean;
   error: string | null;
 }
 
 const initialState: UserState = {
-  userData: null,
+  data: null,
   isLoading: false,
   error: null,
 };
@@ -58,16 +67,16 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     setUserData: (state, action: PayloadAction<UserData | null>) => {
-      state.userData = action.payload;
+      state.data = action.payload;
       state.error = null;
     },
     updateUserData: (state, action: PayloadAction<Partial<UserData>>) => {
-      if (state.userData) {
-        state.userData = { ...state.userData, ...action.payload };
+      if (state.data) {
+        state.data = { ...state.data, ...action.payload };
       }
     },
     resetUserData: (state) => {
-      state.userData = null;
+      state.data = null;
       state.error = null;
     },
     setUserLoading: (state, action: PayloadAction<boolean>) => {
