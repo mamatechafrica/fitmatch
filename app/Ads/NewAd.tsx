@@ -246,7 +246,7 @@ const NewAd = () => {
           <Text className="mx-3 font-roboto-condensed tracking-[-0.3px] text-[18px]">
             {selected === 0 && "Choix de diffusion"}
             {selected === 1 && "Statique"}
-            {selected === 2 && "Page d'accueil"}
+            {selected === 2 && "Page d&apos;accueil"}
             {selected === 3 && "Page Swiper"}
           </Text>
 
@@ -283,7 +283,7 @@ const NewAd = () => {
                 setSelected(2);
                 setAdData((prev) => ({
                   ...prev,
-                  distributionType: "Page d'accueil",
+                  distributionType: "Page d&apos;accueil",
                 }));
                 setShowChoices(false);
               }}
