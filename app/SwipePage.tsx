@@ -333,11 +333,13 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     alignItems: "center",
     justifyContent: "center",
+    paddingHorizontal: 16,
   },
   cardContainer: {
     position: "relative",
-    width: width * 0.85,
-    height: height * 0.6,
+    width: Math.min(width * 0.85, 400), // Max width for large screens
+    height: Math.min(height * 0.6, 600), // Max height for large screens
+    alignSelf: "center",
   },
   card: {
     position: "absolute",
@@ -363,9 +365,11 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   name: {
-    fontSize: 24,
+    fontSize: Math.min(24, width * 0.06), // Responsive font size
     marginTop: 10,
     fontWeight: "600",
+    textAlign: "center",
+    paddingHorizontal: 16,
   },
   iconContainer: {
     position: "absolute",
@@ -375,9 +379,10 @@ const styles = StyleSheet.create({
   },
   indicatorContainer: {
     position: "absolute",
-    bottom: 50,
+    bottom: Math.max(50, height * 0.08), // Responsive bottom spacing
     flexDirection: "row",
     alignItems: "center",
+    alignSelf: "center",
   },
   indicator: {
     width: 8,
@@ -395,9 +400,20 @@ const styles = StyleSheet.create({
   },
   skipButton: {
     position: "absolute",
-    top: 50,
+    top: Math.max(50, height * 0.08), // Responsive top spacing
     right: 20,
-    padding: 10,
+    padding: 12,
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    borderRadius: 20,
+    minWidth: 80,
+    alignItems: "center",
+  },
+  skipText: {
+    color: "white",
+    fontSize: Math.min(16, width * 0.04), // Responsive font size
+    fontWeight: "600",
+  },
+});
     zIndex: 100,
   },
   skipText: {

@@ -17,6 +17,7 @@ import {
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import Toast from "react-native-toast-message";
+import { getCardWidth, getResponsiveFontSize, isDesktop, isTablet } from "@/constants/responsive";
 
 const UserCard = ({ user: item, index }: { user: UserData; index: number }) => {
   const { width } = useWindowDimensions();
@@ -24,6 +25,15 @@ const UserCard = ({ user: item, index }: { user: UserData; index: number }) => {
   console.log(item);
 
   if (!item) return null;
+
+  // Responsive sizing
+  const cardWidth = isDesktop ? getCardWidth() : isTablet ? width * 0.4 : width * 0.45;
+  const cardHeight = cardWidth * 1.4; // Maintain aspect ratio
+  const nameFontSize = getResponsiveFontSize(22);
+  const iconSize = isDesktop ? 40 : 35;
+  
+  // Responsive margins
+  const marginVertical = isDesktop ? 12 : isTablet ? 8 : 4;
 
   const handleLike = async () => {
     try {
@@ -66,7 +76,12 @@ const UserCard = ({ user: item, index }: { user: UserData; index: number }) => {
   return (
     <Animated.View
       entering={FadeInDown.delay(150 * index)}
-      className="w-[45vw] bg-white rounded-[20px] overflow-hidden my-2"
+      className="bg-white rounded-[20px] overflow-hidden"
+      style={{
+        width: cardWidth,
+        marginVertical: marginVertical,
+        marginHorizontal: isDesktop ? 8 : 4,
+      }}
     >
       <TouchableOpacity
         onPress={() =>
@@ -79,7 +94,7 @@ const UserCard = ({ user: item, index }: { user: UserData; index: number }) => {
         <ImageBackground
           source={{ uri: item?.profilePicUrl }}
           style={{
-            height: width * 0.5,
+            height: cardHeight * 0.75, // Responsive height
             margin: 2,
             borderRadius: 18,
             overflow: "hidden",
@@ -94,23 +109,26 @@ const UserCard = ({ user: item, index }: { user: UserData; index: number }) => {
             }}
           />
           <View className="absolute bottom-2 flex-1 w-full">
-            <Text className="text-wrap mx-4 text-white text-[22px] font-roboto-condensed-bold">
+            <Text 
+              className="text-wrap mx-4 text-white font-roboto-condensed-bold"
+              style={{ fontSize: nameFontSize }}
+            >
               {item?.nom} {item?.prenoms},
               {calculateAge(item?.naissance as Timestamp)}
             </Text>
             <View className="bg-white rounded-[12px] px-2 mt-2 mx-2 flex-row items-center justify-evenly">
-              <TouchableOpacity onPress={handleUnlike}>
+              <TouchableOpacity onPress={handleUnlike} className="p-2">
                 <Entypo
                   name="cross"
-                  size={35}
+                  size={iconSize}
                   color={isLiked ? "gray" : "red"}
                 />
               </TouchableOpacity>
               <View
                 style={{ width: 2, height: 24, backgroundColor: "#a24646" }}
               />
-              <TouchableOpacity onPress={handleLike}>
-                <Entypo name="heart" size={30} color="red" />
+              <TouchableOpacity onPress={handleLike} className="p-2">
+                <Entypo name="heart" size={iconSize - 5} color="red" />
               </TouchableOpacity>
             </View>
           </View>

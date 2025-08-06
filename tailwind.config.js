@@ -33,6 +33,20 @@ module.exports = {
         "inter-bold": ["Inter_18pt-Bold"],
         "reddit-sans-bold": ["Reddit_Sans-Bold"],
       },
+      screens: {
+        'xs': '480px',
+        'sm': '640px',
+        'md': '768px',
+        'lg': '1024px',
+        'xl': '1280px',
+        '2xl': '1536px',
+      },
+      maxWidth: {
+        'container': '1152px', // 80% of 1440px
+      },
+      spacing: {
+        'safe': 'env(safe-area-inset-bottom)',
+      },
     },
   },
   plugins: [],

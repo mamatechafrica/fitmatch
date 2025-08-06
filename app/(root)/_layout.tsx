@@ -6,11 +6,20 @@ import ProfileIcon from "@/components/Icons/TabBar/ProfileIcon";
 import SearchIcon from "@/components/Icons/TabBar/SearchIcon";
 import { Tabs } from "expo-router";
 import React from "react";
-import { View } from "react-native";
+import { View, useWindowDimensions, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { isDesktop, isTablet, getResponsivePadding } from "@/constants/responsive";
 
 const TabsLayout = () => {
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  
+  // Responsive values
+  const isWeb = Platform.OS === 'web';
+  const tabBarHeight = isDesktop ? 70 : 60;
+  const horizontalPadding = getResponsivePadding(16);
+  const maxTabBarWidth = isDesktop ? 800 : undefined;
+
   return (
     <Tabs
       screenOptions={{
@@ -18,33 +27,43 @@ const TabsLayout = () => {
         tabBarStyle: {
           backgroundColor: "#0f0e0c",
           borderTopWidth: 2,
-          paddingBottom: insets.bottom, // Adjust based on device safe area
+          paddingBottom: isWeb ? 8 : insets.bottom, // Different padding for web
           paddingTop: 5,
-          height: 60 + insets.bottom, // increase height to account for it
+          paddingHorizontal: horizontalPadding,
+          height: tabBarHeight + (isWeb ? 8 : insets.bottom),
           borderColor: "white",
           overflow: "hidden",
+          maxWidth: maxTabBarWidth,
+          alignSelf: "center",
+          width: isDesktop ? Math.min(width, 800) : "100%",
+          // Web-specific styles
+          ...(isWeb && {
+            borderTopLeftRadius: 16,
+            borderTopRightRadius: 16,
+            marginHorizontal: isDesktop ? 20 : 0,
+          }),
         },
-
-        // tabBarBackground: () => (
-        //   <View className="h-[60] w-full overflow-hidden">
-        //     <BlurView
-        //       blurType="dark"
-        //       reducedTransparencyFallbackColor="black"
-        //       style={{ position: "absolute", height: 60, width: "100%" }}
-        //       blurAmount={10}
-        //     />
-        //   </View>
-        // ),
         tabBarShowLabel: false,
+        tabBarItemStyle: {
+          paddingVertical: isDesktop ? 8 : 4,
+          marginHorizontal: isDesktop ? 8 : 0,
+        },
+        // Better hover effects for web
+        ...(isWeb && {
+          tabBarActiveTintColor: "#D32C1C",
+          tabBarInactiveTintColor: "rgba(255, 255, 255, 0.7)",
+        }),
       }}
       initialRouteName="Home"
     >
       <Tabs.Screen
         name="Home"
         options={{
-          tabBarIcon: () => {
+          tabBarIcon: ({ focused }) => {
             return (
-              <View className="mt-4">
+              <View 
+                className={`${isDesktop ? 'mt-2' : 'mt-4'} ${focused && isWeb ? 'bg-white/10 rounded-lg p-2' : ''}`}
+              >
                 <HomeIcon />
               </View>
             );
@@ -54,8 +73,12 @@ const TabsLayout = () => {
       <Tabs.Screen
         name="SearchScreen"
         options={{
-          tabBarIcon: () => {
-            return <SearchIcon />;
+          tabBarIcon: ({ focused }) => {
+            return (
+              <View className={focused && isWeb ? 'bg-white/10 rounded-lg p-2' : ''}>
+                <SearchIcon />
+              </View>
+            );
           },
         }}
       />
@@ -63,8 +86,12 @@ const TabsLayout = () => {
       <Tabs.Screen
         name="NotificationsScreen"
         options={{
-          tabBarIcon: () => {
-            return <BellIcon />;
+          tabBarIcon: ({ focused }) => {
+            return (
+              <View className={focused && isWeb ? 'bg-white/10 rounded-lg p-2' : ''}>
+                <BellIcon />
+              </View>
+            );
           },
         }}
       />
@@ -72,16 +99,24 @@ const TabsLayout = () => {
       <Tabs.Screen
         name="FavoritesScreen"
         options={{
-          tabBarIcon: () => {
-            return <HeartIcon />;
+          tabBarIcon: ({ focused }) => {
+            return (
+              <View className={focused && isWeb ? 'bg-white/10 rounded-lg p-2' : ''}>
+                <HeartIcon />
+              </View>
+            );
           },
         }}
       />
       <Tabs.Screen
         name="MessageScreen"
         options={{
-          tabBarIcon: () => {
-            return <MessageBubbleIcon />;
+          tabBarIcon: ({ focused }) => {
+            return (
+              <View className={focused && isWeb ? 'bg-white/10 rounded-lg p-2' : ''}>
+                <MessageBubbleIcon />
+              </View>
+            );
           },
         }}
       />
@@ -89,8 +124,12 @@ const TabsLayout = () => {
       <Tabs.Screen
         name="ProfileScreen"
         options={{
-          tabBarIcon: () => {
-            return <ProfileIcon />;
+          tabBarIcon: ({ focused }) => {
+            return (
+              <View className={focused && isWeb ? 'bg-white/10 rounded-lg p-2' : ''}>
+                <ProfileIcon />
+              </View>
+            );
           },
         }}
       />
