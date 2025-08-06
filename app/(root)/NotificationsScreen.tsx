@@ -127,7 +127,7 @@ const NotificationsScreen = () => {
     );
 
     return unsubscribe;
-  }, [currentUserId]);
+  }, [currentUserId, processNotifications]);
 
   const handleRefresh = () => {
     setRefreshing(true);

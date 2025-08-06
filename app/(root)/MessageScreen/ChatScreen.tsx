@@ -38,8 +38,8 @@ type Message = {
 };
 
 export default function ChatScreen() {
-  const { top } = useSafeAreaInsets();
-  const { chatId, otherUserId, otherUserName, otherUserPhoto } =
+  // const { top } = useSafeAreaInsets(); // Reserved for future layout adjustments
+  const { chatId, otherUserName, otherUserPhoto } =
     useLocalSearchParams<{
       chatId: string;
       otherUserId: string;
@@ -50,7 +50,7 @@ export default function ChatScreen() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const currentUser = auth.currentUser;
-  const isKeyboardUp = useKeyboardVisible();
+  // const isKeyboardUp = useKeyboardVisible(); // Reserved for keyboard-aware scrolling
 
   useEffect(() => {
     if (!chatId || !currentUser) return;

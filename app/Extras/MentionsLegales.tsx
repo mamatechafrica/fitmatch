@@ -61,7 +61,7 @@ const MentionsLegales = () => {
         contentContainerClassName="pb-4"
       >
         {/* 1. Éditeur de l'application */}
-        <Section title="1. Éditeur de l'application">
+        <Section title="1. Éditeur de l&apos;application">
           Nom de l’entreprise : FitMatch Inc.
           {"\n"}Forme juridique : SAS
           {"\n"}SIRET : 123 456 789 00012
@@ -73,7 +73,7 @@ const MentionsLegales = () => {
         </Section>
 
         {/* 2. Hébergement de l'application */}
-        <Section title="2. Hébergement de l'application">
+        <Section title="2. Hébergement de l&apos;application">
           Nom de l’hébergeur : Google Cloud Platform
           {"\n"}Adresse : Google Ireland Ltd, Gordon House, Barrow Street,
           Dublin 4, Irlande {"\n\n"}
