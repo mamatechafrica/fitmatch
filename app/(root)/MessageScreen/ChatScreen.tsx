@@ -22,11 +22,9 @@ import {
 } from "react-native";
 
 import BackBTNIcon from "@/components/Icons/BackBTNIcon";
-import useKeyboardVisible from "@/customHooks/useIsKeyboardVisible";
 import { Image } from "expo-image";
 import {
   SafeAreaView,
-  useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
 type Message = {
@@ -38,8 +36,7 @@ type Message = {
 };
 
 export default function ChatScreen() {
-  const { top } = useSafeAreaInsets();
-  const { chatId, otherUserId, otherUserName, otherUserPhoto } =
+  const { chatId, otherUserName, otherUserPhoto } =
     useLocalSearchParams<{
       chatId: string;
       otherUserId: string;
@@ -50,7 +47,6 @@ export default function ChatScreen() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const currentUser = auth.currentUser;
-  const isKeyboardUp = useKeyboardVisible();
 
   useEffect(() => {
     if (!chatId || !currentUser) return;

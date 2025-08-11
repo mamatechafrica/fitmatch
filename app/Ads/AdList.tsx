@@ -288,7 +288,6 @@ const AdList = () => {
               </View>
             ) : (
               <View className="flex-row items-center justify-around my-4">
-                "² "
                 <TouchableOpacity
                   className="bg-gray-500 px-6 py-3 rounded-full"
                   onPress={() => setShowConfirm(false)}

@@ -32,7 +32,6 @@ import {
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import {
   SafeAreaView,
-  useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import Video from "react-native-video";
 import { useSelector } from "react-redux";
@@ -48,11 +47,9 @@ const ViewPostScreen = () => {
   const [likesCount, setLikesCount] = useState(0);
   const currentUser = getAuth().currentUser;
   const currentUserUid = currentUser?.uid;
-  const { bottom } = useSafeAreaInsets();
   const userData = useSelector((state: RootState) => state.user.data);
   const [showComment, setShowComment] = useState(true);
   const isKeyboardVisible = useKeyboardVisible();
-  const [isPlaying, setIsPlaying] = useState(false);
   // Video player setup
 
   const handleCommentSubmit = async () => {
@@ -79,24 +76,6 @@ const ViewPostScreen = () => {
     }
     setShowComment(true);
   };
-
-  const renderComment = ({ item }: { item: Comment }) => (
-    <View style={styles.commentContainer}>
-      <Image
-        source={
-          item.userInfo.profilePicUrl
-            ? { uri: item.userInfo.profilePicUrl }
-            : require("@/assets/images/default-user-picture.png")
-        }
-        style={styles.commentAvatar}
-      />
-      <View style={styles.commentContent}>
-        <Text style={styles.commentUsername}>{item.userInfo.username}</Text>
-        <Text style={styles.commentText}>{item.text}</Text>
-        <Text style={styles.commentTime}>{getTimeAgo(item.createdAt)}</Text>
-      </View>
-    </View>
-  );
 
   const handleLikePress = async () => {
     try {
@@ -145,7 +124,7 @@ const ViewPostScreen = () => {
       unsubscribeComments();
       //   player.pause();
     };
-  }, [postId]);
+  }, [postId, currentUser?.uid]);
 
   // ... (keep your handleLikePress and handleCommentSubmit functions the same)
 
