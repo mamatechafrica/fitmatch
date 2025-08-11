@@ -20,7 +20,7 @@ const LikesComponent = ({ userId }: { userId: string }) => {
         text2: "Like envoyé!",
         visibilityTime: 3000,
       });
-    } catch (error) {
+    } catch {
       //   Toast.show({
       //     type: "error",
       //     text1: "Error",
@@ -39,7 +39,7 @@ const LikesComponent = ({ userId }: { userId: string }) => {
       //     text2: "Profile unliked",
       //     visibilityTime: 3000,
       //   });
-    } catch (error) {
+    } catch {
       //   Toast.show({
       //     type: "error",
       //     text1: "Error",
@@ -58,7 +58,7 @@ const LikesComponent = ({ userId }: { userId: string }) => {
         text2: "SuperLike envoyé!",
         visibilityTime: 3000,
       });
-    } catch (error) {
+    } catch {
       //   Toast.show({
       //     type: "error",
       //     text1: "Error",

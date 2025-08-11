@@ -64,5 +64,3 @@ const StoryBar = () => {
 };
 
 export default StoryBar;
-
-const styles = StyleSheet.create({});

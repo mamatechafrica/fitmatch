@@ -32,7 +32,7 @@ export default function Index() {
 
     // Cleanup if component unmounts before user is found
     return () => unsubscribe();
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (isLoading || creatingUserData) return;
@@ -41,7 +41,7 @@ export default function Index() {
     } else {
       router.replace("/Auth/LandingPage");
     }
-  }, [user, isLoading, creatingUserData]);
+  }, [user, isLoading, creatingUserData, router]);
 
   return null;
 }

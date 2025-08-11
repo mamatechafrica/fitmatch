@@ -39,8 +39,6 @@ const Post: React.FC<PostProps> = ({
   );
   const [likesCount, setLikesCount] = useState(post.likes?.count | 0);
   const [commentsCount] = useState(post?.comments?.count | 0);
-  const [sharesCount] = useState(post?.shares?.count | 0);
-  const [isPlaying, setIsPlaying] = useState(false);
 
   const handleLikePress = async () => {
     try {
