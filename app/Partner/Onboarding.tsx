@@ -178,7 +178,7 @@ const Onboarding = () => {
         } else {
           updatedImages = prevImages;
         }
-        dispatch(setPartnerImages(updatedImages));
+        dispatch(setPartnerImages(updatedImages.map((img) => img.uri)));
         return updatedImages;
       });
     }
@@ -239,7 +239,7 @@ const Onboarding = () => {
         } else {
           updated = processedVideos;
         }
-        dispatch(setPartnerVideos(updated));
+        dispatch(setPartnerVideos(updated.map((video) => video.uri)));
         return updated;
       });
     }

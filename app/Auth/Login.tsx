@@ -1,6 +1,12 @@
 import { useEmailAuth } from "@/customHooks/useEmailAuth";
 import { useGoogleSignIn } from "@/customHooks/useGoogleSignIn";
 import { RootState } from "@/store/rootReducer";
+import { setUser } from "@/store/slices/authSlice";
+import {
+  createUserIfNotExists,
+  getCurrentUserData,
+  getQuizCompleted,
+} from "@/helpers/firestore";
 import { Ionicons, Octicons } from "@expo/vector-icons";
 import { BlurView } from "@react-native-community/blur";
 import { router } from "expo-router";
@@ -57,13 +63,36 @@ const Login = () => {
   };
 
   function handleAuthStateChanged(user: any) {
+    dispatch(setUser(user));
     if (user) router.replace("/Auth/ProcessUserData");
   }
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(getAuth(), handleAuthStateChanged);
     return unsubscribe;
-  }, []);
+  }, [currentUser]);
+
+  useEffect(() => {
+    const createDBUser = async () => {
+      setShowOverlay(true);
+      if (currentUser) {
+        await createUserIfNotExists("partenaire");
+        const userData = await getCurrentUserData();
+
+        if (userData.userType !== "binome")
+          return router.replace("/Auth/ProfilPartenaire");
+
+        const quizCompleted = await getQuizCompleted();
+        if (quizCompleted) {
+          router.replace("/(root)/Home");
+        } else {
+          router.replace("/Users/Onboarding");
+        }
+      }
+      setShowOverlay(false);
+    };
+    createDBUser();
+  }, [currentUser]);
 
   return (
     <SafeAreaView className="flex-1 bg-[#0F0E0C]">
