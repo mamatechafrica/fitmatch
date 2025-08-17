@@ -6,7 +6,7 @@ import {
 } from "@/helpers/firestore";
 import { RootState } from "@/store/rootReducer";
 import { setUser } from "@/store/slices/authSlice";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -20,6 +20,7 @@ import {
 import Animated, { FadeOut } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
+import { serializeUser } from "@/helpers/serialization";
 
 const SignUp = () => {
   const currentUser = useSelector((state: RootState) => state.auth.user);
@@ -33,7 +34,8 @@ const SignUp = () => {
   };
 
   function handleAuthStateChanged(user: any) {
-    dispatch(setUser(user));
+    const serializedUser = serializeUser(user);
+    dispatch(setUser(serializedUser as User | null));
   }
 
   useEffect(() => {

@@ -10,7 +10,7 @@ import {
 import { Ionicons, Octicons } from "@expo/vector-icons";
 import { BlurView } from "@react-native-community/blur";
 import { router } from "expo-router";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -30,6 +30,7 @@ import Animated, { FadeOut, ZoomInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { useDispatch, useSelector } from "react-redux";
+import { serializeUser } from "@/helpers/serialization";
 
 const Login = () => {
   const currentUser = useSelector((state: RootState) => state.auth.user);
@@ -62,15 +63,20 @@ const Login = () => {
     }
   };
 
-  function handleAuthStateChanged(user: any) {
-    dispatch(setUser(user));
-    if (user) router.replace("/Auth/ProcessUserData");
-  }
+  const handleAuthStateChanged = React.useCallback(
+    (user: any) => {
+      const serializedUser = serializeUser(user);
+      dispatch(setUser(serializedUser as User | null));
+      console.log("Navigating to ProcessUserData from Login");
+      if (user) router.replace("/Auth/ProcessUserData");
+    },
+    [dispatch]
+  );
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(getAuth(), handleAuthStateChanged);
     return unsubscribe;
-  }, [currentUser]);
+  }, [handleAuthStateChanged]);
 
   useEffect(() => {
     const createDBUser = async () => {

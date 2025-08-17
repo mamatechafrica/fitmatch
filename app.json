@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.julianojosoa13.fitmatch",
+      "bundleIdentifier": "fit_match.test",
       "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
@@ -19,7 +19,7 @@
         "backgroundColor": "#0f0e0c"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.julianojosoa13.fitmatch",
+      "package": "fit_match.test",
       "googleServicesFile": "./google-services.json",
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
@@ -32,8 +32,12 @@
       "favicon": "./assets/image/logo-minimalist.png"
     },
     "plugins": [
-      ["@react-native-firebase/app"],
-      ["@react-native-firebase/auth"],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.925031854161-i4sar4pmmlekjt4s9k0uiluiald83u79"
+        }
+      ],
       "expo-router",
       [
         "expo-splash-screen",

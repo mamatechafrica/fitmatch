@@ -4,16 +4,16 @@ import { initializeApp } from "firebase/app";
 import { getReactNativePersistence, initializeAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyB9cJ5WFNeKOvujmvgfjZ3yrmhAI6TR2WI",
-  authDomain: "f-i-t-match-po1xi1.firebaseapp.com",
+  apiKey: "AIzaSyDEsEFREav56tS7tOQq9V9fOo6Pg8zAnqg",
+  authDomain: "fit-match-6930a.firebaseapp.com",
   databaseURL:
-    "https://f-i-t-match-po1xi1-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "f-i-t-match-po1xi1",
-  storageBucket: "f-i-t-match-po1xi1.firebasestorage.app", // Corrected storageBucket format
-  messagingSenderId: "300620800683",
-  appId: "1:300620800683:web:7ebd71aab7720dc1264dee",
+    "https://fit-match-6930a-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "fit-match-6930a",
+  storageBucket: "fit-match-6930a.firebasestorage.app",
+  messagingSenderId: "925031854161",
+  appId: "1:925031854161:web:97d27bc6fd03b2c9c88870",
+  measurementId: "G-B964WWCCKT",
 };
 
 // Initialize Firebase

@@ -23,16 +23,14 @@ import {
   ref,
   uploadBytes,
 } from "firebase/storage";
+import { serializeFirestoreData } from "@/helpers/serialization";
 
 export const getCurrentAuthenticatedUser = () => {
   const auth = getAuth(firebaseApp);
   return auth.currentUser;
 };
 
-export const createUserIfNotExists = async (
-  userType: string,
-  userData: UserData
-) => {
+export const createUserIfNotExists = async (userType: string, userData?: UserData) => {
   const currentUser = getCurrentAuthenticatedUser();
   if (!currentUser) return;
 
@@ -78,7 +76,12 @@ export const getCurrentUserData = async (): Promise<UserData | null> => {
     const userRef = doc(db, "users", user.uid);
     const docSnap = await getDoc(userRef);
 
-    return docSnap.exists() ? (docSnap.data() as UserData) : null;
+    if (docSnap.exists()) {
+      const rawData = docSnap.data();
+      return serializeFirestoreData(rawData) as UserData;
+    }
+
+    return null;
   } catch (error) {
     console.error("Error fetching user data:", error);
     return null;
@@ -340,9 +343,7 @@ export const sendMessage = async (
   // You might want to update the other user's FCM token here for push notifications
 };
 
-export const createPartnerIfNotExists = async (
-  partnerData: PartnerData
-) => {
+export const createPartnerIfNotExists = async (partnerData: PartnerData) => {
   const currentUser = getCurrentAuthenticatedUser();
   if (!currentUser) return;
 
@@ -375,22 +376,35 @@ export const uploadPartnerImages = async (images: any[]) => {
     const user = getCurrentAuthenticatedUser();
     if (!user) throw new Error("No authenticated user");
 
-    console.log("🔥 uploadPartnerImages - Starting upload for", images.length, "images");
+    console.log(
+      "🔥 uploadPartnerImages - Starting upload for",
+      images.length,
+      "images"
+    );
 
     const uploadPromises = images.map(async (image, index) => {
       const filename = `${Date.now()}-${index}.jpg`;
       const storage = getStorage(firebaseApp);
-      const imageRef = ref(storage, `partenaires/${user.uid}/images/${filename}`);
+      const imageRef = ref(
+        storage,
+        `partenaires/${user.uid}/images/${filename}`
+      );
 
-      console.log(`🔥 uploadPartnerImages - Uploading image ${index + 1}:`, image.uri);
-      
+      console.log(
+        `🔥 uploadPartnerImages - Uploading image ${index + 1}:`,
+        image.uri
+      );
+
       const response = await fetch(image.uri);
       const blob = await response.blob();
       await uploadBytes(imageRef, blob);
 
       const downloadURL = await getDownloadURL(imageRef);
-      console.log(`🔥 uploadPartnerImages - Image ${index + 1} uploaded successfully:`, downloadURL);
-      
+      console.log(
+        `🔥 uploadPartnerImages - Image ${index + 1} uploaded successfully:`,
+        downloadURL
+      );
+
       return downloadURL;
     });
 
@@ -411,7 +425,10 @@ export const uploadPartnerVideos = async (videos: any[]) => {
     const uploadPromises = videos.map(async (video, index) => {
       const filename = `${Date.now()}-${index}.mp4`;
       const storage = getStorage(firebaseApp);
-      const videoRef = ref(storage, `partenaires/${user.uid}/videos/${filename}`);
+      const videoRef = ref(
+        storage,
+        `partenaires/${user.uid}/videos/${filename}`
+      );
 
       const response = await fetch(video.uri);
       const blob = await response.blob();
@@ -427,19 +444,21 @@ export const uploadPartnerVideos = async (videos: any[]) => {
   }
 };
 
-export const updatePartnerDataFirestore = async (data: Partial<PartnerData>) => {
+export const updatePartnerDataFirestore = async (
+  data: Partial<PartnerData>
+) => {
   try {
     const user = getCurrentAuthenticatedUser();
     if (!user) throw new Error("No authenticated user found.");
 
     console.log("🔥 updatePartnerDataFirestore - Updating with data:", data);
-    
+
     const partnerRef = doc(getFirestore(firebaseApp), "partenaires", user.uid);
     await updateDoc(partnerRef, {
       ...data,
       updatedAt: serverTimestamp(),
     });
-    
+
     console.log("🔥 updatePartnerDataFirestore - Update successful");
   } catch (error: any) {
     console.error("🔥 updatePartnerDataFirestore - Error:", error);
@@ -457,20 +476,23 @@ export const getCurrentPartnerData = async (): Promise<PartnerData | null> => {
     const docSnap = await getDoc(partnerRef);
 
     if (docSnap.exists()) {
-      const data = docSnap.data() as PartnerData;
+      const rawData = docSnap.data();
       console.log("🔥 getCurrentPartnerData - Retrieved from Firestore:", {
-        titre: data.titre,
-        imageUrl: data.imageUrl,
-        imagesCount: data.images?.length || 0,
-        images: data.images?.slice(0, 2) || [] // Show first 2 image URLs for debugging
+        titre: rawData.titre,
+        imageUrl: rawData.imageUrl,
+        imagesCount: rawData.images?.length || 0,
+        images: rawData.images?.slice(0, 2) || [],
       });
-      return data;
+      return serializeFirestoreData(rawData) as PartnerData;
     } else {
       console.log("🔥 getCurrentPartnerData - No document found in Firestore");
       return null;
     }
   } catch (error) {
-    console.error("🔥 getCurrentPartnerData - Error fetching partner data:", error);
+    console.error(
+      "🔥 getCurrentPartnerData - Error fetching partner data:",
+      error
+    );
     return null;
   }
 };
@@ -481,23 +503,30 @@ export const checkUserType = async (): Promise<"binome" | "partner" | null> => {
     if (!user) return null;
 
     const db = getFirestore(firebaseApp);
-    
+
     // Check if user exists in users collection (binome)
     const userRef = doc(db, "users", user.uid);
     const userSnap = await getDoc(userRef);
-    
+
     if (userSnap.exists()) {
-      return "binome";
+      const userData = userSnap.data();
+      console.log(
+        "🔥 checkUserType - Found in users collection, userType:",
+        userData?.userType
+      );
+
+      // Return the actual userType from the document
+      return userData?.userType === "partenaire" ? "partner" : "binome";
     }
-    
+
     // Check if user exists in partenaires collection (partner)
     const partnerRef = doc(db, "partenaires", user.uid);
     const partnerSnap = await getDoc(partnerRef);
-    
+
     if (partnerSnap.exists()) {
       return "partner";
     }
-    
+
     return null;
   } catch (error) {
     console.error("Error checking user type:", error);
