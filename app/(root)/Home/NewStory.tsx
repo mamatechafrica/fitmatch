@@ -104,7 +104,7 @@ export default function NewStory() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0f0e0c] justify-between ">
+    <SafeAreaView className="flex-1 bg-dark justify-between ">
       <TouchableOpacity
         className="bg-dark h-[36px] w-[36px] justify-center items-center absolute z-10 p-3 mt-4"
         style={{ top: 10, left: 10 }}

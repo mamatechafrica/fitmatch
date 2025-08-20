@@ -126,7 +126,7 @@ const Accueil = () => {
 
   if (isError) {
     return (
-      <SafeAreaView className="bg-[#0f0e0c] flex-1 justify-center items-center">
+      <SafeAreaView className="bg-dark flex-1 justify-center items-center">
         <Text className="text-white">Error loading posts</Text>
       </SafeAreaView>
     );
@@ -135,7 +135,7 @@ const Accueil = () => {
   const { posts = [] } = postsData || {};
 
   return (
-    <SafeAreaView className="bg-[#0f0e0c] flex-1 h-full w-full pt-20">
+    <SafeAreaView className="bg-dark flex-1 h-full w-full pt-20">
       <HeaderBar />
 
       {/* Story Bar */}

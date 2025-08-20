@@ -181,8 +181,7 @@ const ProfileScreen = () => {
                       console.warn(e);
                     }
                     setBusy(false);
-                    router.dismissAll();
-                    router.dismissTo("/Auth/LandingPage");
+                    router.replace("/Auth/LandingPage");
                   }}
                   className="flex-1 py-3 bg-red-700 rounded-xl items-center"
                 >
@@ -246,7 +245,6 @@ const ProfileScreen = () => {
                       });
 
                       setConfirmVisible(false);
-                      router.dismissAll();
                       router.replace("/Auth/LandingPage");
                     } catch (err: any) {
                       console.error("Delete error:", err);

@@ -93,7 +93,7 @@ const SearchScreen = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFilter]);
   return (
-    <SafeAreaView className="bg-[#0f0e0c] flex-1">
+    <SafeAreaView className="bg-dark flex-1">
       <View className="flex-row items-center justify-between pr-4">
         <Image
           source={require("@/assets/images/logo.png")}
