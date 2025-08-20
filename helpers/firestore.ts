@@ -287,6 +287,26 @@ export const toggleLike = async (
   }
 };
 
+export const sendLike = async (targetUserId: string) => {
+  try {
+    const currentUser = getCurrentAuthenticatedUser();
+    if (!currentUser) throw new Error("No authenticated user");
+
+    const db = getFirestore(firebaseApp);
+
+    await addDoc(collection(db, "likes"), {
+      fromUserId: currentUser.uid,
+      toUserId: targetUserId,
+      createdAt: serverTimestamp(),
+    });
+
+    console.log(`Like sent from ${currentUser.uid} to ${targetUserId}`);
+  } catch (error) {
+    console.error("Error sending like:", error);
+    throw error;
+  }
+};
+
 export const getOrCreateChat = async (otherUserId: string) => {
   const currentUser = getAuth().currentUser;
   if (!currentUser) throw new Error("User not authenticated");
