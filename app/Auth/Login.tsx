@@ -3,14 +3,14 @@ import { useGoogleSignIn } from "@/customHooks/useGoogleSignIn";
 import { RootState } from "@/store/rootReducer";
 import { setUser } from "@/store/slices/authSlice";
 import {
-  createUserIfNotExists,
-  getCurrentUserData,
-  getQuizCompleted,
-} from "@/helpers/firestore";
+  getAuth,
+  onAuthStateChanged,
+  User,
+  sendPasswordResetEmail,
+} from "firebase/auth";
 import { Ionicons, Octicons } from "@expo/vector-icons";
 import { BlurView } from "@react-native-community/blur";
 import { router } from "expo-router";
-import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -45,6 +45,8 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const [resetEmail, setResetEmail] = useState("");
+  const [showResetModal, setShowResetModal] = useState(false);
 
   const {
     error: emailSginInError,
@@ -53,6 +55,7 @@ const Login = () => {
   } = useEmailAuth();
 
   const handleGoogleSignIn = async () => {
+    setShowOverlay(true);
     await signIn();
     if (googleSignInError) {
       Toast.show({
@@ -61,13 +64,13 @@ const Login = () => {
         text2: googleSignInError,
       });
     }
+    setShowOverlay(false);
   };
 
   const handleAuthStateChanged = React.useCallback(
     (user: any) => {
       const serializedUser = serializeUser(user);
       dispatch(setUser(serializedUser as User | null));
-      console.log("Navigating to ProcessUserData from Login");
       if (user) router.replace("/Auth/ProcessUserData");
     },
     [dispatch]
@@ -78,27 +81,39 @@ const Login = () => {
     return unsubscribe;
   }, [handleAuthStateChanged]);
 
-  useEffect(() => {
-    const createDBUser = async () => {
-      setShowOverlay(true);
-      if (currentUser) {
-        await createUserIfNotExists("partenaire");
-        const userData = await getCurrentUserData();
+  const handlePasswordReset = async () => {
+    const email = signInForm.email.trim() || resetEmail.trim();
 
-        if (userData.userType !== "binome")
-          return router.replace("/Auth/ProfilPartenaire");
+    if (!email) {
+      setShowResetModal(true);
+      return;
+    }
 
-        const quizCompleted = await getQuizCompleted();
-        if (quizCompleted) {
-          router.replace("/(root)/Home");
-        } else {
-          router.replace("/Users/Onboarding");
-        }
+    try {
+      await sendPasswordResetEmail(getAuth(), email);
+      Toast.show({
+        type: "success",
+        text1: "Email envoyé",
+        text2:
+          "Vérifiez votre boîte mail pour réinitialiser votre mot de passe",
+      });
+      setShowResetModal(false);
+    } catch (error: any) {
+      let errorMessage = "Impossible d'envoyer l'email de réinitialisation";
+
+      if (error.code === "auth/user-not-found") {
+        errorMessage = "Aucun compte trouvé avec cette adresse email";
+      } else if (error.code === "auth/invalid-email") {
+        errorMessage = "Adresse email invalide";
       }
-      setShowOverlay(false);
-    };
-    createDBUser();
-  }, [currentUser]);
+
+      Toast.show({
+        type: "error",
+        text1: "Erreur",
+        text2: errorMessage,
+      });
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-[#0F0E0C]">
@@ -158,7 +173,7 @@ const Login = () => {
           </TouchableOpacity>
           <View className="mb-4 mt-4 h-[0.5px] bg-white/50 self-center w-1/4" />
           <TouchableOpacity
-            className="flex-row h-[45px] overflow-hidden rounded-[16px]  items-center justify-center  bg-[#25D31C] w-[350px]"
+            className="flex-row h-[45px] overflow-hidden rounded-[16px] items-center justify-center bg-[#25D31C] w-[350px]"
             onPress={() => router.navigate("/Auth/Onboarding")}
           >
             <Text className="font-inter-bold text-black text-[22px] text-center">
@@ -167,12 +182,15 @@ const Login = () => {
           </TouchableOpacity>
         </View>
         <View className="mb-2 mt-4 h-[0.5px] bg-white/50 self-center w-1/4" />
-        <TouchableOpacity className="self-center mb-4" hitSlop={8}>
+        <TouchableOpacity
+          className="self-center mb-4"
+          hitSlop={8}
+          onPress={handlePasswordReset}
+        >
           <Text className="text-roboto-bold text-red-600">
             Réinitialiser le mot de passe
           </Text>
         </TouchableOpacity>
-
         <Text
           className="font-roboto text-white text-[10px] mx-4 my-2 text-nowrap tracking-[-0.3px]"
           style={{ letterSpacing: -0.3 }}
@@ -194,7 +212,6 @@ const Login = () => {
             size={22}
           />
         </TouchableOpacity>
-
         <View className="px-6 mt-6">
           <Text className="text-white font-roboto-bold text-[28px] mx-4 tracking-[-0.3px]">
             Nos partenaires
@@ -205,7 +222,6 @@ const Login = () => {
                 <Text className="text-[#343434] text-[14px] font-roboto tracking-[-0.3px] mb-4">
                   Sponsorisée
                 </Text>
-
                 <Image
                   source={require("@/assets/images/logoBinocle.png")}
                   className="w-[150px] h-[75px] self-center"
@@ -267,15 +283,13 @@ const Login = () => {
           <View />
           <Animated.View
             entering={ZoomInDown.duration(600)}
-            className="bg-[#0f0e0c] p-4 h-[60vh] w-[95vw] rounded-t-[30px]"
+            className="bg-dark p-4 h-[60vh] w-[95vw] rounded-t-[30px]"
           >
             <KeyboardAwareScrollView>
               <View className="h-1 bg-white/30 self-center w-14 rounded-full my-2" />
               <Text className="text-white font-roboto-bold text-[20px] text-center">
                 Connexion
               </Text>
-
-              {/* Email */}
               <View className="gap-y-2 px-6 py-2">
                 <Text className="text-white tracking-[-0.3px] font-roboto-condensed text-[14px]">
                   Email
@@ -290,8 +304,6 @@ const Login = () => {
                   }
                 />
               </View>
-
-              {/* Password */}
               <View className="gap-y-2 px-6 py-2">
                 <Text className="text-white tracking-[-0.3px] font-roboto-condensed text-[14px]">
                   Mot de passe
@@ -317,14 +329,11 @@ const Login = () => {
                   </TouchableOpacity>
                 </View>
               </View>
-
-              {/* Submit Button */}
               <TouchableOpacity
                 className="mt-8 mx-4 items-center justify-center rounded-[16] bg-[#D32C1C] py-2 px-8 flex-row gap-2"
                 onPress={async () => {
                   if (emailSignInBusy) return;
                   if (loading) return;
-
                   if (!signInForm.email || !signInForm.password) {
                     Toast.show({
                       text1: "Connexion",
@@ -333,9 +342,8 @@ const Login = () => {
                     });
                     return;
                   }
-
+                  setShowOverlay(true);
                   await emailSignIn(signInForm.email, signInForm.password);
-
                   if (emailSginInError) {
                     console.error("Login erro : ", emailSginInError);
                     Toast.show({
@@ -343,8 +351,10 @@ const Login = () => {
                       text2: "Verifier votre nom d'utilisateur ou mot de passe",
                       type: "error",
                     });
+                    setShowOverlay(false);
                     return;
                   }
+                  setShowOverlay(false);
                 }}
               >
                 <Text className="text-white font-roboto-condensed tracking-[-0.3px] text-[20px]">
@@ -352,7 +362,6 @@ const Login = () => {
                 </Text>
                 {emailSignInBusy && <ActivityIndicator color={"white"} />}
               </TouchableOpacity>
-
               <Image
                 source={require("@/assets/images/logo.png")}
                 className="w-[86] h-[53] mx-4 mt-8 self-center my-4"
@@ -362,6 +371,42 @@ const Login = () => {
           </Animated.View>
         </ScrollView>
         <Toast />
+      </Modal>
+      {/* Password Reset Modal */}
+      <Modal visible={showResetModal} transparent animationType="fade">
+        <View className="flex-1 bg-black/50 justify-center items-center px-4">
+          <View className="bg-dark w-full rounded-xl p-4">
+            <Text className="text-white text-lg font-bold mb-4 text-center">
+              Réinitialiser le mot de passe
+            </Text>
+            <TextInput
+              className="bg-white rounded-lg p-3 mb-4"
+              placeholder="Votre adresse email"
+              value={resetEmail}
+              onChangeText={setResetEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+            <View className="flex-row gap-3">
+              <TouchableOpacity
+                className="flex-1 py-3 bg-gray-600 rounded-lg"
+                onPress={() => setShowResetModal(false)}
+              >
+                <Text className="text-white text-center font-bold">
+                  Annuler
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className="flex-1 py-3 bg-red-600 rounded-lg"
+                onPress={handlePasswordReset}
+              >
+                <Text className="text-white text-center font-bold">
+                  Envoyer
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
       </Modal>
     </SafeAreaView>
   );
