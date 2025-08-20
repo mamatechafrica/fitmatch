@@ -65,14 +65,17 @@ const LandingPage = () => {
         >
           <TouchableOpacity
             onPress={async () => {
-              console.log(currentUser);
+              console.log("currentUser Landing", currentUser);
               if (currentUser) {
                 const userData = await getCurrentUserData();
                 if (userData?.userType === "binome") {
                   router.navigate("/Users/Onboarding");
-                } else router.navigate("/Partner/ProfilPartenaire");
+                } else {
+                  router.navigate("/Partner/ProfilPartenaire");
+                }
+              } else {
+                router.navigate("/Auth/Login");
               }
-              router.navigate("/Auth/Login");
             }}
             className="py-2 rounded-[16px] items-center justify-center bg-red px-6"
             style={{ marginBottom: insets.bottom + 28 }}

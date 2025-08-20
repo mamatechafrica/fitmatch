@@ -23,12 +23,15 @@ const DietChoie = () => {
   const [isLoading, setIsLoading] = useState(false);
   const handleChange = useHandleFormChange();
 
-  useEffect(() => {
-    if (userData?.diet && userData?.diet !== "") {
-      console.log("diet ", userData?.diet);
+useEffect(() => {
+  if (userData?.diet && userData?.diet !== "") {
+    if (userData?.personality && userData?.personality !== "") {
+      router.replace("/Users/WeekendVibes");
+    } else {
       router.replace("/Users/PersonalityChoice");
     }
-  }, []);
+  }
+}, []);
 
   useEffect(() => {
     switch (selected) {

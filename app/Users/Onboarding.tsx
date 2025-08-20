@@ -330,7 +330,7 @@ const Onboarding = () => {
     }
   };
   return (
-    <SafeAreaView className={`flex flex-1 bg-dark h-full-w-full gap-2`}>
+    <SafeAreaView className={`flex flex-1 bg-dark  h-full w-full gap-2`}>
       {busy && (
         <View className="absolute flex-1 z-20 top-0 bottom-0 left-0 right-0 items-center justify-center bg-black/80">
           {/* <BlurView
@@ -548,7 +548,7 @@ const Onboarding = () => {
           onRequestClose={() => setShowCityModal(false)}
         >
           <View className="flex-1 bg-black/50 justify-center items-center px-4">
-            <View className="bg-[#0f0e0c] w-full rounded-xl p-4 h-[80%]">
+            <View className="bg-dark w-full rounded-xl p-4 h-[80%]">
               <Text className="text-lg font-roboto-light mb-4 text-white uppercase">
                 Sélectionne ta ville
               </Text>
@@ -613,7 +613,7 @@ const Onboarding = () => {
           onRequestClose={() => setShowCountryModal(false)}
         >
           <View className="flex-1 bg-black/50 justify-center items-center px-4">
-            <View className="bg-[#0f0e0c] w-full rounded-xl p-4 h-[80%]">
+            <View className="bg-dark w-full rounded-xl p-4 h-[80%]">
               <Text className="text-lg font-roboto-light mb-4 text-white uppercase">
                 Sélectionne ta nationalité
               </Text>
@@ -939,7 +939,7 @@ const Onboarding = () => {
           <View />
           <Animated.View
             entering={ZoomInDown.duration(600)}
-            className="bg-[#0f0e0c] p-4 h-[75vh] w-[95vw] rounded-t-[30px]"
+            className="bg-dark p-4 h-[75vh] w-[95vw] rounded-t-[30px]"
           >
             <KeyboardAwareScrollView>
               <View className="h-1 bg-white/30 self-center w-14 rounded-full my-2" />
