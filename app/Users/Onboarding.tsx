@@ -470,7 +470,9 @@ const Onboarding = () => {
             }}
           >
             <Text className="font-roboto-bold">
-              {userData?.naissance?.toLocaleString().split(" ")[0]}
+              {userData?.naissance
+                ? new Date(userData.naissance).toLocaleDateString()
+                : ""}
             </Text>
             <Ionicons name={"calendar"} size={25} color={"rgba(0,0,0,0.7)"} />
           </TouchableOpacity>
@@ -485,7 +487,8 @@ const Onboarding = () => {
               onChange={({ date }) => {
                 setShowDatepicker(false);
 
-                handleChange("naissance", date);
+                const dateObj = parseDateType(date);
+                handleChange("naissance", dateObj.toISOString());
               }}
               styles={{
                 header: {

@@ -9,6 +9,14 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
+const Title = ({ titleText }: { titleText: string }) => {
+  return (
+    <Text className="text-white font-inter-bold text-[11px] font-bold">
+      {titleText}
+    </Text>
+  );
+};
+
 const CGU = () => {
   const { top } = useSafeAreaInsets();
   return (
@@ -34,9 +42,7 @@ const CGU = () => {
         contentContainerClassName="rounded-3xl "
       >
         <View className="m-2">
-          <Text className="text-white font-inter-bold text-[11px]">
-            1. Objet 
-          </Text>
+          <Title titleText="1. Objet " />
           <Text className="text-white text-[10px] font-inter">
             Les présentes Conditions Générales d&apos;Utilisation (ci-après «
             CGU ») ont pour objet de définir les modalités d&apos;accès et
@@ -48,9 +54,7 @@ const CGU = () => {
         </View>
 
         <View className="m-2">
-          <Text className="text-white font-inter-bold text-[11px]">
-            2. Accès au service 
-          </Text>
+          <Title titleText="2. Accès au service " />
           <Text className="text-white text-[10px] font-inter">
             L&apos;application FITMATCH est accessible gratuitement en
             téléchargement sur App Store et Google Play. Certaines
@@ -62,9 +66,7 @@ const CGU = () => {
         </View>
 
         <View className="m-2">
-          <Text className="text-white font-inter-bold text-[11px]">
-            3. Utilisation de l&apos;application 
-          </Text>
+          <Title titleText="3. Utilisation de l'application " />
           <Text className="text-white text-[10px] font-inter">
             L&apos;utilisateur s&apos;engage à utiliser l&apos;application dans
             le respect des lois en vigueur et des règles de bonne conduite. Il
@@ -100,9 +102,7 @@ const CGU = () => {
         </View>
 
         <View className="m-2">
-          <Text className="text-white font-inter-bold text-[11px]">
-            4. Durée et résiliation 
-          </Text>
+          <Title titleText="4. Durée et résiliation " />
           <Text className="text-white text-[10px] font-inter">
             L&apos;inscription est valable pour une durée indéterminée.
             L&apos;utilisateur peut supprimer son compte à tout moment via les
@@ -113,9 +113,7 @@ const CGU = () => {
         </View>
 
         <View className="m-2">
-          <Text className="text-white font-inter-bold text-[11px]">
-            5. Responsabilité 
-          </Text>
+          <Title titleText="5. Responsabilité " />
           <Text className="text-white text-[10px] font-inter">
             L&apos;Editeur met en œuvre tous les moyens raisonnables pour
             assurer un accès fiable et sécurisé à l&apos;application. Toutefois,
@@ -144,9 +142,7 @@ const CGU = () => {
         </View>
 
         <View className="m-2">
-          <Text className="text-white font-inter-bold text-[11px]">
-            6. Propriété intellectuelle 
-          </Text>
+          <Title titleText="6. Propriété intellectuelle " />
           <Text className="text-white text-[10px] font-inter">
             L&apos;ensemble des éléments de l&apos;application (textes, visuels,
             code, logo) est protégé par le droit de la propriété intellectuelle
@@ -156,9 +152,7 @@ const CGU = () => {
         </View>
 
         <View className="m-2">
-          <Text className="text-white font-inter-bold text-[11px]">
-            7. Données personnelles 
-          </Text>
+          <Title titleText="7. Données personnelles " />
           <Text className="text-white text-[10px] font-inter">
             L&apos;utilisation de l&apos;application implique la collecte de
             certaines données personnelles. L&apos;utilisateur est invité à
@@ -168,9 +162,7 @@ const CGU = () => {
         </View>
 
         <View className="m-2">
-          <Text className="text-white font-inter-bold text-[11px]">
-            8. Liens externes 
-          </Text>
+          <Title titleText="8. Liens externes " />
           <Text className="text-white text-[10px] font-inter">
             L&apos;application peut contenir des liens vers des sites tiers.
             L&apos;Editeur n&apos;est pas responsable du contenu ou du bon
@@ -179,9 +171,7 @@ const CGU = () => {
         </View>
 
         <View className="m-2">
-          <Text className="text-white font-inter-bold text-[11px]">
-            9. Modifications des CGU 
-          </Text>
+          <Title titleText="9. Modifications des CGU " />
           <Text className="text-white text-[10px] font-inter">
             L&apos;Editeur se réserve le droit de modifier les présentes CGU à
             tout moment. Les utilisateurs seront informés de toute modification
@@ -190,9 +180,7 @@ const CGU = () => {
         </View>
 
         <View className="m-2">
-          <Text className="text-white font-inter-bold text-[11px]">
-            10. Droit applicable 
-          </Text>
+          <Title titleText="10. Droit applicable " />
           <Text className="text-white text-[10px] font-inter">
             Les présentes CGU sont soumises au droit français. En cas de litige,
             les tribunaux compétents seront ceux du ressort du siège social de

@@ -42,7 +42,7 @@ const LandingPage = () => {
             <Animated.Text
               entering={FadeInDown.duration(600).delay(600)}
               className="text-[#D0A0A0] font-kavivanar text-[32px] mx-5"
-              style={{ letterSpacing: -0.3 }}
+              style={{ letterSpacing: -0.3, fontStyle: "italic" }}
             >
               Moins de swipe
             </Animated.Text>
@@ -53,7 +53,7 @@ const LandingPage = () => {
             <Animated.Text
               entering={FadeInDown.duration(600).delay(1200)}
               className="text-[#D0A0A0] font-kavivanar text-[32px] text-end mr-6"
-              style={{ letterSpacing: -0.3 }}
+              style={{ letterSpacing: -0.3, fontStyle: "italic" }}
             >
               Plus de sueur
             </Animated.Text>
