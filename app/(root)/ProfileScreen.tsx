@@ -27,6 +27,7 @@ import { useDispatch, useSelector } from "react-redux";
 const ProfileScreen = () => {
   const storage = getStorage(firebaseApp);
   const userData = useSelector((state: RootState) => state.user.data);
+
   const { signOut: signOutGoogle } = useGoogleSignIn();
   const { signOut: signOutEmail } = useEmailAuth();
   const [confirmVisible, setConfirmVisible] = React.useState(false);
@@ -131,8 +132,211 @@ const ProfileScreen = () => {
             🎯 Completion: {userData.percentage}%
           </Text>
         )}
+
+        {/* Profile Information Section */}
+        <View style={styles.infoSection}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.infoTitle}>Informations personnelles</Text>
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={() => router.push("/Users/Onboarding?editing=true")}
+            >
+              <Text style={styles.editButtonText}>✏️ Modifier</Text>
+            </TouchableOpacity>
+          </View>
+
+          {userData.pseudo && (
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>👤 Pseudo:</Text>
+              <Text style={styles.infoValue}>{userData.pseudo}</Text>
+            </View>
+          )}
+
+          {userData.naissance && (
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>🎂 Date de naissance:</Text>
+              <Text style={styles.infoValue}>
+                {new Date(userData.naissance).toLocaleDateString("fr-FR")}
+              </Text>
+            </View>
+          )}
+
+          {userData.ville && (
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>📍 Ville:</Text>
+              <Text style={styles.infoValue}>{userData.ville}</Text>
+            </View>
+          )}
+
+          {userData.nationalite && (
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>🌍 Nationalité:</Text>
+              <Text style={styles.infoValue}>{userData.nationalite}</Text>
+            </View>
+          )}
+
+          {userData.sex !== undefined && (
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>⚧ Sexe:</Text>
+              <Text style={styles.infoValue}>
+                {userData.sex === 1 ? "Homme" : "Femme"}
+              </Text>
+            </View>
+          )}
+        </View>
+
+        {/* Sport Information Section */}
+        <View style={styles.infoSection}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.infoTitle}>Informations sportives</Text>
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={() => router.push("/Users/SportChoice?editing=true")}
+            >
+              <Text style={styles.editButtonText}>✏️ Modifier</Text>
+            </TouchableOpacity>
+          </View>
+
+          {userData.sport && (
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>⚽ Sport principal:</Text>
+              <Text style={styles.infoValue}>{userData.sport}</Text>
+            </View>
+          )}
+
+          {userData.sportExtreme && (
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>🔥 Sport extrême:</Text>
+              <Text style={styles.infoValue}>{userData.sportExtreme}</Text>
+            </View>
+          )}
+
+          {userData.category && (
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>🏆 Catégorie:</Text>
+              <Text style={styles.infoValue}>{userData.category}</Text>
+            </View>
+          )}
+
+          {userData.frequence !== undefined && (
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>📅 Fréquence:</Text>
+              <Text style={styles.infoValue}>{userData.frequence}/semaine</Text>
+            </View>
+          )}
+        </View>
+
+        {/* Diet Section */}
+        {userData.diet && (
+          <View style={styles.infoSection}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.infoTitle}>Régime alimentaire</Text>
+              <TouchableOpacity
+                style={styles.editButton}
+                onPress={() => router.push("/Users/DietChoice?editing=true")}
+              >
+                <Text style={styles.editButtonText}>✏️ Modifier</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>🍽️ Régime:</Text>
+              <Text style={styles.infoValue}>{userData.diet}</Text>
+            </View>
+          </View>
+        )}
+
+        {/* Personality Section */}
+        {userData.personality && (
+          <View style={styles.infoSection}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.infoTitle}>Personnalité</Text>
+              <TouchableOpacity
+                style={styles.editButton}
+                onPress={() =>
+                  router.push("/Users/PersonalityChoice?editing=true")
+                }
+              >
+                <Text style={styles.editButtonText}>✏️ Modifier</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>🎭 Trait principal:</Text>
+              <Text style={styles.infoValue}>
+                {typeof userData.personality === "string"
+                  ? userData.personality
+                  : Array.isArray(userData.personality)
+                  ? userData.personality.join(", ")
+                  : ""}
+              </Text>
+            </View>
+          </View>
+        )}
+
+        {/* Relationship Goals Section */}
+        {userData.objectifDuCoeur && (
+          <View style={styles.infoSection}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.infoTitle}>Objectif relationnel</Text>
+              <TouchableOpacity
+                style={styles.editButton}
+                onPress={() =>
+                  router.push("/Users/SportsObjectives?editing=true")
+                }
+              >
+                <Text style={styles.editButtonText}>✏️ Modifier</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>💕 Objectif:</Text>
+              <Text style={styles.infoValue}>{userData.objectifDuCoeur}</Text>
+            </View>
+          </View>
+        )}
+
+        {/* Weekend Vibes Section */}
+        {Array.isArray(userData.weekendVibes) &&
+          userData.weekendVibes.length > 0 && (
+            <View style={styles.infoSection}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.infoTitle}>Ambiances weekend</Text>
+                <TouchableOpacity
+                  style={styles.editButton}
+                  onPress={() =>
+                    router.push("/Users/WeekendVibes?editing=true")
+                  }
+                >
+                  <Text style={styles.editButtonText}>✏️ Modifier</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>🌟 Ambiances:</Text>
+                <Text style={styles.infoValue}>
+                  {Array.isArray(userData.weekendVibes)
+                    ? userData.weekendVibes.join(", ")
+                    : ""}
+                </Text>
+              </View>
+            </View>
+          )}
+
+        {/* Complete Profile Button - Show if user hasn't completed all sections */}
+        {(!userData.sport ||
+          !userData.diet ||
+          !userData.personality ||
+          !Array.isArray(userData.weekendVibes) ||
+          userData.weekendVibes.length === 0) && (
+          <TouchableOpacity
+            className="bg-[#FF6B35] rounded-full py-3 items-center px-20 mt-6 w-full"
+            onPress={() => router.push("/Users/Onboarding")}
+          >
+            <Text className="text-[#FFF] font-roboto text-[1.1rem] font-semibold">
+              🚀 Compléter mon profil
+            </Text>
+          </TouchableOpacity>
+        )}
+
         <TouchableOpacity
-          className=" mx-4 items-center justify-center rounded-[16] bg-[#D32C1C] py-2 w-full mt-20"
+          className=" mx-4 items-center justify-center rounded-[16] bg-[#D32C1C] py-2 w-full mt-6"
           onPress={() => setConfirmVisible(true)}
         >
           <Text className="text-white font-roboto-condensed tracking-[-0.3px] text-[20px]">
@@ -312,6 +516,57 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
     marginTop: 20,
+  },
+  infoSection: {
+    backgroundColor: "#1a1a1a",
+    borderRadius: 16,
+    padding: 20,
+    marginTop: 20,
+    width: "100%",
+  },
+  infoTitle: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  infoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 12,
+    paddingVertical: 4,
+  },
+  infoLabel: {
+    color: "#ccc",
+    fontSize: 14,
+    fontWeight: "500",
+    flex: 1,
+  },
+  infoValue: {
+    color: "#fff",
+    fontSize: 14,
+    flex: 2,
+    textAlign: "right",
+    flexWrap: "wrap",
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  editButton: {
+    backgroundColor: "#FF6B35",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  editButtonText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "600",
   },
 });
 

@@ -7,7 +7,7 @@ import SprintIcon from "@/components/Icons/SprintIcon";
 import { useHandleFormChange } from "@/customHooks/useHandleFormChange copy";
 import { updateUserData } from "@/helpers/firestore";
 import { RootState } from "@/store/rootReducer";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -36,16 +36,22 @@ const SportsObjectives = () => {
   const userData = useSelector((state: RootState) => state.user.data);
   const [loading, setLoading] = useState(false);
   const handleChange = useHandleFormChange();
+  const params = useLocalSearchParams();
+  const isEditingProfile = params.editing === "true";
 
   const isSelected = (n: number) => {
     return n === selected;
   };
 
   useEffect(() => {
-    if (userData.objectifDuCoeur && userData.objectifDuCoeur !== "") {
+    if (
+      !isEditingProfile &&
+      userData.objectifDuCoeur &&
+      userData.objectifDuCoeur !== ""
+    ) {
       router.replace("/Users/VideoChallenge");
     }
-  }, []);
+  }, [isEditingProfile, userData.objectifDuCoeur]);
 
   const handleSubmit = async () => {
     if (loading) return;
@@ -64,7 +70,12 @@ const SportsObjectives = () => {
       const selectedLabel = objectifsLabel[selected];
       handleChange("objectifDuCoeur", selectedLabel);
       await updateUserData({ objectifDuCoeur: selectedLabel });
-      router.navigate("/Users/VideoChallenge");
+
+      if (isEditingProfile) {
+        router.push("/(root)/ProfileScreen");
+      } else {
+        router.navigate("/Users/VideoChallenge");
+      }
     } catch (error: any) {
       console.error(error);
       Toast.show({

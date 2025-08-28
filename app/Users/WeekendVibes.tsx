@@ -17,7 +17,7 @@ import YogaIcon from "@/components/Icons/YogaIcon";
 import { useHandleFormChange } from "@/customHooks/useHandleFormChange copy";
 import { updateUserData } from "@/helpers/firestore";
 import { RootState } from "@/store/rootReducer";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 
 import {
@@ -38,6 +38,8 @@ const WeekendVibes = () => {
   const userData = useSelector((state: RootState) => state.user.data);
   const [weekendVibesLabels, setWeekendVibesLabels] = useState<string[]>([]);
   const handleChange = useHandleFormChange();
+  const params = useLocalSearchParams();
+  const isEditingProfile = params.editing === "true";
 
   // Create a mapping of numbers to their corresponding labels
   const vibesMap: Record<number, string> = {
@@ -90,10 +92,14 @@ const WeekendVibes = () => {
   };
 
   useEffect(() => {
-    if (userData.weekendVibes && userData.weekendVibes.length > 0) {
+    if (
+      !isEditingProfile &&
+      userData.weekendVibes &&
+      userData.weekendVibes.length > 0
+    ) {
       router.replace("/Users/SportsObjectives");
     }
-  }, []);
+  }, [isEditingProfile, userData.weekendVibes]);
 
   return (
     <SafeAreaView className={`flex flex-1 bg-dark h-full-w-full gap-2`}>
@@ -571,7 +577,12 @@ const WeekendVibes = () => {
             handleChange("weekendVibes", weekendVibesLabels);
             await updateUserData({ weekendVibes: weekendVibesLabels });
             setLoading(false);
-            router.navigate("/Users/SportsObjectives");
+
+            if (isEditingProfile) {
+              router.push("/(root)/ProfileScreen");
+            } else {
+              router.navigate("/Users/SportsObjectives");
+            }
           }}
         >
           <Text className="text-white font-roboto-condensed tracking-[-0.3px] text-[20px]">

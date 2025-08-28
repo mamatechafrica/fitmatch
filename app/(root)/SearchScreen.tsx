@@ -1,11 +1,11 @@
-import CalendarIcon from "@/components/Icons/CalendarIcon";
 import GearIcon from "@/components/Icons/GearIcon";
-import HandShakeIcon from "@/components/Icons/HandShakeIcon";
 import SearchFilters from "@/components/Icons/SearchBar/SearchFilters";
 import SettingsIcon from "@/components/Icons/SettingsIcon";
 import Post from "@/components/Posts/Post";
 import SearchBar from "@/components/Search/SearchBar";
 import UserCard from "@/components/UserCard";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { Image } from "expo-image";
 import { getAuth } from "firebase/auth";
 import {
@@ -102,10 +102,10 @@ const SearchScreen = () => {
         />
         <View className="flex-row items-center gap-4">
           <TouchableOpacity hitSlop={8}>
-            <HandShakeIcon />
+            <FontAwesome5 name="handshake" size={24} color="white" />
           </TouchableOpacity>
           <TouchableOpacity hitSlop={8}>
-            <CalendarIcon />
+            <AntDesign name="calendar" size={24} color="white" />
           </TouchableOpacity>
           <TouchableOpacity hitSlop={8}>
             <GearIcon />

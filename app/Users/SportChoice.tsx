@@ -2,7 +2,7 @@ import ChevronDownIcon from "@/components/Icons/ChevronDownIcon";
 import { useHandleFormChange } from "@/customHooks/useHandleFormChange copy";
 import { updateUserData } from "@/helpers/firestore";
 import { RootState } from "@/store/rootReducer";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -45,12 +45,14 @@ const SportChoice = () => {
   const [loading, setLoading] = useState(false);
 
   const userData = useSelector((state: RootState) => state.user.data);
+  const params = useLocalSearchParams();
+  const isEditing = params.editing === "true";
 
   useEffect(() => {
-    if (userData?.sportExtreme !== "" && userData?.frequence) {
+    if (!isEditing && userData?.sportExtreme !== "" && userData?.frequence) {
       router.replace("/Users/DietChoice");
     }
-  }, []);
+  }, [isEditing, userData?.frequence, userData?.sportExtreme]);
 
   const onChange = useHandleFormChange();
 
@@ -60,6 +62,21 @@ const SportChoice = () => {
 
   return (
     <SafeAreaView className={`flex flex-1 bg-dark h-full-w-full gap-2`}>
+      {/* Header with back button for editing */}
+      {isEditing && (
+        <View className="flex-row items-center px-4 py-2 border-b border-gray-800">
+          <TouchableOpacity
+            onPress={() => router.push("/(root)/ProfileScreen")}
+            className="p-2 mr-3"
+          >
+            <Text className="text-white text-lg">←</Text>
+          </TouchableOpacity>
+          <Text className="text-white text-lg font-semibold">
+            Modifier le sport
+          </Text>
+        </View>
+      )}
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         className="flex-1"
@@ -175,7 +192,13 @@ const SportChoice = () => {
               frequence: frequency,
             });
             setLoading(false);
-            router.navigate("/Users/DietChoice");
+
+            // Check if user is editing existing profile or in onboarding flow
+            if (isEditing) {
+              router.push("/(root)/ProfileScreen"); // Return to profile screen
+            } else {
+              router.navigate("/Users/DietChoice"); // Continue onboarding
+            }
           }}
         >
           <Text className="text-white font-roboto-condensed tracking-[-0.3px] text-[20px]">

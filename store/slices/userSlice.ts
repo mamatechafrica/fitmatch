@@ -57,10 +57,18 @@ export interface UserData {
   quizCompleted?: boolean;
   sport?: string;
   diet?: string;
-  personality?: string[];
+  personality?: string | string[]; // Can be either string or array
   objectives?: string[];
   weekendVibes?: string[];
   createdAt?: string; // This should be string after serialization
+  updatedAt?: string;
+  totalPoints?: number;
+  percentage?: number;
+  sportExtreme?: string;
+  frequence?: number;
+  category?: string;
+  objectifDuCoeur?: string;
+  videoChallenge?: string;
   quiz?: {
     quiz1?: number;
     quiz2?: number;
