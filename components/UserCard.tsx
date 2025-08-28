@@ -6,7 +6,6 @@ import { UserData } from "@/store/slices/userSlice";
 import { Entypo } from "@expo/vector-icons";
 import { ImageBackground } from "expo-image";
 import { router } from "expo-router";
-import { Timestamp } from "firebase/firestore";
 import React from "react";
 import {
   StyleSheet,
@@ -27,7 +26,8 @@ const UserCard = ({ user: item, index }: { user: UserData; index: number }) => {
 
   const handleLike = async () => {
     try {
-      await sendLike(item.uid!);
+      if (!item.uid) return;
+      await sendLike(item.uid);
       setIsLiked(true);
       Toast.show({
         type: "success",
@@ -38,7 +38,7 @@ const UserCard = ({ user: item, index }: { user: UserData; index: number }) => {
       Toast.show({
         type: "error",
         text1: "Error",
-        text2: error.message,
+        text2: error instanceof Error ? error.message : "Unknown error",
         visibilityTime: 2000,
       });
     }
@@ -46,6 +46,7 @@ const UserCard = ({ user: item, index }: { user: UserData; index: number }) => {
 
   const handleUnlike = async () => {
     try {
+      if (!item.uid) return;
       await unlikeProfile(item.uid);
       setIsLiked(false);
       Toast.show({
@@ -57,7 +58,7 @@ const UserCard = ({ user: item, index }: { user: UserData; index: number }) => {
       Toast.show({
         type: "error",
         text1: "Error",
-        text2: error.message,
+        text2: error instanceof Error ? error.message : "Unknown error",
         visibilityTime: 2000,
       });
     }
@@ -95,8 +96,8 @@ const UserCard = ({ user: item, index }: { user: UserData; index: number }) => {
           />
           <View className="absolute bottom-2 flex-1 w-full">
             <Text className="text-wrap mx-4 text-white text-[22px] font-roboto-condensed-bold">
-              {item?.nom} {item?.prenoms},
-              {calculateAge(item?.naissance as Timestamp)}
+              {item?.nom} {item?.prenoms},{" "}
+              {item?.naissance ? calculateAge(item.naissance) : "N/A"}
             </Text>
             <View className="bg-white rounded-[12px] px-2 mt-2 mx-2 flex-row items-center justify-evenly">
               <TouchableOpacity onPress={handleUnlike}>

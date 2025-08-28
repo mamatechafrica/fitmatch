@@ -1,9 +1,12 @@
 import { db } from "@/config/firebase";
-import { sendLike } from "@/helpers/firestore";
+import { sendLike } from "@/helpers/firestoreLikesActions";
+import ProfileFilterModal, {
+  FilterOptions,
+} from "@/components/modals/ProfileFilterModal";
 import { FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Dimensions,
   Image,
@@ -174,7 +177,7 @@ const SwipeDirection: React.FC<SwipeDirectionProps> = ({ direction }) => {
 
       return () => clearTimeout(timer);
     }
-  }, [direction]);
+  }, [direction, opacity, scale]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -203,10 +206,18 @@ export default function SwipePage() {
   );
   const [profiles, setProfiles] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
+  const [filters, setFilters] = useState<FilterOptions>({
+    sports: [],
+    cities: [],
+    ageRange: { min: 18, max: 65 },
+    maxDistance: 50,
+  });
 
-  useEffect(() => {
-    const fetchUsers = async () => {
+  const fetchUsers = useCallback(
+    async (appliedFilters: FilterOptions = filters) => {
       try {
+        setLoading(true);
         const usersQuery = query(
           collection(db, "users"),
           where("personalData", "==", true)
@@ -216,25 +227,58 @@ export default function SwipePage() {
         const users: UserProfile[] = [];
         querySnapshot.forEach((doc) => {
           const data = doc.data();
+          const userAge = calculateAge(data.naissance);
+
+          // Apply age filter
+          if (
+            userAge < appliedFilters.ageRange.min ||
+            userAge > appliedFilters.ageRange.max
+          ) {
+            return;
+          }
+
+          // Apply sports filter
+          if (appliedFilters.sports.length > 0) {
+            const userSports = data.sports || [];
+            const hasMatchingSport = appliedFilters.sports.some((sport) =>
+              userSports.includes(sport)
+            );
+            if (!hasMatchingSport) {
+              return;
+            }
+          }
+
+          // Apply cities filter
+          if (appliedFilters.cities.length > 0) {
+            const userCity = data.ville || "";
+            if (!appliedFilters.cities.includes(userCity)) {
+              return;
+            }
+          }
+
           users.push({
             uid: doc.id,
             name: `${data.prenoms} ${data.nom}`,
-            age: calculateAge(data.naissance),
+            age: userAge,
             photoURL: data.profilePicUrl,
             personalData: data.personalData,
           });
         });
 
         setProfiles(users);
+        setCurrentIndex(0); // Reset to first profile when filters change
         setLoading(false);
       } catch (error) {
         console.error("Error fetching users:", error);
         setLoading(false);
       }
-    };
+    },
+    [filters]
+  );
 
+  useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [fetchUsers]);
 
   const calculateAge = (birthDate: string) => {
     const birthYear = new Date(birthDate).getFullYear();
@@ -268,6 +312,12 @@ export default function SwipePage() {
     router.replace("/(root)/Home");
   };
 
+  const handleFilterApply = (newFilters: FilterOptions) => {
+    setFilters(newFilters);
+    setIsFilterModalVisible(false);
+    fetchUsers(newFilters);
+  };
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -290,10 +340,19 @@ export default function SwipePage() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <View style={styles.container}>
-        {/* Skip button at top right */}
-        <TouchableOpacity onPress={handleSkip} style={styles.skipButton}>
-          <Text style={styles.skipText}>Passer</Text>
-        </TouchableOpacity>
+        {/* Top bar with skip and filter buttons */}
+        <View style={styles.topBar}>
+          <TouchableOpacity
+            onPress={() => setIsFilterModalVisible(true)}
+            style={styles.filterButton}
+          >
+            <FontAwesome name="filter" size={24} color="#fff" />
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={handleSkip} style={styles.skipButton}>
+            <Text style={styles.skipText}>Passer</Text>
+          </TouchableOpacity>
+        </View>
 
         <View style={styles.cardContainer}>
           {profiles.map((profile, index) => (
@@ -323,6 +382,13 @@ export default function SwipePage() {
           ))}
         </View>
       </View>
+
+      <ProfileFilterModal
+        visible={isFilterModalVisible}
+        onClose={() => setIsFilterModalVisible(false)}
+        onApplyFilters={handleFilterApply}
+        currentFilters={filters}
+      />
     </GestureHandlerRootView>
   );
 }
@@ -394,9 +460,6 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 255, 255, 0.1)",
   },
   skipButton: {
-    position: "absolute",
-    top: 50,
-    right: 20,
     padding: 10,
     zIndex: 100,
   },
@@ -404,5 +467,18 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  topBar: {
+    position: "absolute",
+    top: 50,
+    left: 20,
+    right: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    zIndex: 100,
+  },
+  filterButton: {
+    padding: 10,
   },
 });

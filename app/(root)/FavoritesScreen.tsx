@@ -24,7 +24,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const FavoritesScreen = () => {
-  const filters = ["Mes coups de cœur", "Cœurs reçus"];
+  const filters = ["Mes coups de cœur", "Cœurs reçus", "Matches"];
   const [selectedFilter, setSelectedFilter] = useState("Mes coups de cœur");
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,7 +63,7 @@ const FavoritesScreen = () => {
             setLoading(false);
           }
         });
-      } else {
+      } else if (selectedFilter === "Cœurs reçus") {
         // Realtime listener for users who liked me
         const likesQuery = query(
           collection(db, "likes"),
@@ -84,6 +84,33 @@ const FavoritesScreen = () => {
             })
           );
           setUsers(usersData.filter(Boolean));
+          setLoading(false);
+        });
+      } else if (selectedFilter === "Matches") {
+        // Realtime listener for matches
+        const matchesQuery = query(
+          collection(db, "matches"),
+          where("users", "array-contains", currentUserId)
+        );
+
+        unsubscribeLikes = onSnapshot(matchesQuery, async (querySnapshot) => {
+          const matchedUsers = await Promise.all(
+            querySnapshot.docs.map(async (matchDoc) => {
+              const matchData = matchDoc.data();
+              const otherUserId = matchData.users.find(
+                (id: string) => id !== currentUserId
+              );
+
+              if (otherUserId) {
+                const userDoc = await getDoc(doc(db, "users", otherUserId));
+                return userDoc.exists()
+                  ? { uid: userDoc.id, ...userDoc.data(), matchId: matchDoc.id }
+                  : null;
+              }
+              return null;
+            })
+          );
+          setUsers(matchedUsers.filter(Boolean));
           setLoading(false);
         });
       }
@@ -108,11 +135,11 @@ const FavoritesScreen = () => {
         {filters.map((filter) => (
           <TouchableOpacity
             key={filter}
-            className={`px-4 flex-row gap-2 items-center justify-center ${
+            className={`px-1 flex-row gap-1 items-center justify-center ${
               filter !== filters[filters.length - 1]
                 ? "border-r border-r-white"
                 : ""
-            } w-[45vw]`}
+            } flex-1`}
             onPress={() => setSelectedFilter(filter)}
             style={{
               borderBottomColor: selectedFilter === filter ? "red" : "white",
@@ -120,10 +147,15 @@ const FavoritesScreen = () => {
               paddingBottom: 4,
             }}
           >
-            <Text className="font-roboto-condensed -tracking-[0.3px] text-[16px] text-white">
+            <Text
+              className="font-roboto-condensed -tracking-[0.3px] text-white text-center flex-shrink"
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              style={{ fontSize: 12 }}
+            >
               {filter}
             </Text>
-            <AntDesign size={25} name="heart" color={"red"} />
+            <AntDesign size={16} name="heart" color={"red"} />
           </TouchableOpacity>
         ))}
       </View>
@@ -157,8 +189,10 @@ const FavoritesScreen = () => {
             Aucun{" "}
             {selectedFilter === "Mes coups de cœur"
               ? "coup de cœur"
-              : "cœur reçu"}{" "}
-            pour l'instant
+              : selectedFilter === "Cœurs reçus"
+              ? "cœur reçu"
+              : "match"}{" "}
+            pour l&apos;instant
           </Text>
         </View>
       ) : (

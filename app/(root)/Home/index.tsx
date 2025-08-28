@@ -146,6 +146,16 @@ const Accueil = () => {
         className="flex-1 h-full w-full"
         contentContainerStyle={{ paddingBottom: 5 }}
       >
+        {/* Temporary Test Button for Matchmaking */}
+        {/* <TouchableOpacity
+          className="flex-row items-center gap-x-2 bg-[#28a745] rounded-[12px] px-2 mt-2"
+          onPress={() => router.push("/SwipePage")}
+        >
+          <MaterialCommunityIcons name="heart" size={20} color="white" />
+          <Text className="font-roboto-condensed text-[1.3rem] text-white tracking-[-0.3px]">
+            Test Matchmaking
+          </Text>
+        </TouchableOpacity> */}
         {/* Posts */}
         {posts.length === 0 ? (
           <View className="flex-1 justify-center items-center mt-10 gap-4">

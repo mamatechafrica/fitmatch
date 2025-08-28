@@ -35,21 +35,27 @@ const Post: React.FC<PostProps> = ({
   sponsored = false,
 }) => {
   const [liked, setLiked] = useState(
-    post?.likes?.by?.includes(currentUserUid!)
+    (post?.likes?.by || []).includes(currentUserUid!)
   );
-  const [likesCount, setLikesCount] = useState(post.likes?.count | 0);
-  const [commentsCount] = useState(post?.comments?.count | 0);
-  const [sharesCount] = useState(post?.shares?.count | 0);
+  const [likesCount, setLikesCount] = useState(post.likes?.count || 0);
+  const [commentsCount] = useState(post?.comments?.count || 0);
+  const [sharesCount] = useState(post?.shares?.count || 0);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const handleLikePress = async () => {
     try {
+      const currentLikedState = liked;
       const newLiked = !liked;
+      console.log("Post handleLikePress:", {
+        currentLikedState,
+        newLiked,
+        postId: post.id,
+      });
       setLiked(newLiked);
       setLikesCount((prev) => (newLiked ? prev + 1 : prev - 1));
 
-      // Update Firestore
-      await toggleLike(post.id, currentUserUid!, liked);
+      // Update Firestore - pass the current state before the UI change
+      await toggleLike(post.id, currentUserUid!, currentLikedState);
     } catch (error) {
       // Revert UI changes if Firestore update fails
       setLiked(!liked);

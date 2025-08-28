@@ -255,12 +255,12 @@ export const uploadMediaAsync = async (
 export const toggleLike = async (
   postId: string,
   userId: string,
-  isLiked: boolean
+  isCurrentlyLiked: boolean
 ) => {
   const postRef = doc(db, "posts", postId);
 
   try {
-    if (isLiked) {
+    if (isCurrentlyLiked) {
       // Unlike - remove user from likes array
       await updateDoc(postRef, {
         "likes.by": arrayRemove(userId),
@@ -268,17 +268,9 @@ export const toggleLike = async (
       });
     } else {
       // Like - add user to likes array
-      // First ensure the likes.by array exists
       await updateDoc(postRef, {
         "likes.by": arrayUnion(userId),
         "likes.count": increment(1),
-        // Initialize if missing:
-        ...(await getDoc(postRef).then(
-          (doc) =>
-            !doc.get("likes.by") && {
-              "likes.by": [userId],
-            }
-        )),
       });
     }
   } catch (error) {
