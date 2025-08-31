@@ -1,12 +1,7 @@
 import { useGoogleSignIn } from "@/customHooks/useGoogleSignIn";
-import {
-  createUserIfNotExists,
-  getCurrentUserData,
-  getQuizCompleted,
-} from "@/helpers/firestore";
 import { RootState } from "@/store/rootReducer";
 import { setUser } from "@/store/slices/authSlice";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -20,6 +15,7 @@ import {
 import Animated, { FadeOut } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
+import { serializeUser } from "@/helpers/serialization";
 
 const SignUp = () => {
   const currentUser = useSelector((state: RootState) => state.auth.user);
@@ -29,40 +25,22 @@ const SignUp = () => {
   const { user, loading, signIn } = useGoogleSignIn();
 
   const handleGoogleSignIn = async () => {
+    setShowOverlay(true);
     await signIn();
+    setShowOverlay(false);
   };
 
   function handleAuthStateChanged(user: any) {
-    dispatch(setUser(user));
+    const serializedUser = serializeUser(user);
+    dispatch(setUser(serializedUser as User | null));
+    if (user) router.replace("/Auth/ProcessUserData");
   }
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(getAuth(), handleAuthStateChanged);
     return unsubscribe;
-  }, [user]);
+  }, []);
 
-  useEffect(() => {
-    const createDBUser = async () => {
-      setShowOverlay(true);
-      if (currentUser) {
-        await createUserIfNotExists("partenaire");
-        const userData = await getCurrentUserData();
-
-        if (userData.userType !== "binome")
-          return router.replace("/Auth/ProfilPartenaire");
-
-        const quizCompleted = await getQuizCompleted();
-        if (quizCompleted) {
-          router.replace("/(root)/Home");
-        } else {
-          router.replace("/Users/Onboarding");
-        }
-      }
-      setShowOverlay(false);
-    };
-    createDBUser();
-    console.log("Current user ", currentUser);
-  }, [currentUser]);
   return (
     <SafeAreaView className="flex-1 bg-[#0F0E0C]">
       {(loading || showOverlay) && (
@@ -91,12 +69,13 @@ const SignUp = () => {
           <Text className="text-center text-white font-roboto-bold text-[36px] mt-8 mb-4">
             Créer un compte
           </Text>
+          {/* Placeholder: Add email signup form here */}
           <TouchableOpacity
             className="p-2 rounded-[6px] bg-[#D32C1C]"
-            onPress={() => router.replace("/Auth/ProfilPartenaire")}
+            onPress={() => router.replace("/Auth/Onboarding")} // Changed to Onboarding for type choice
           >
             <Text className="font-roboto text-white text-[20px]">
-              Connexion avec e-mail/téléphone
+              Continuer avec e-mail/téléphone
             </Text>
           </TouchableOpacity>
           <Text className="text-white my-4 font-roboto text-[20px]">OU</Text>
@@ -125,10 +104,9 @@ const SignUp = () => {
         <Text className="text-center font-roboto-bold text-[20px] text-white mt-[40px]">
           Vous avez déjà un compte?
         </Text>
-
         <TouchableOpacity
           className="rounded-[16px] bg-white mx-10 mt-2"
-          onPress={() => router.replace("/Auth/ProfilPartenaire")}
+          onPress={() => router.replace("/Auth/Login")} // Fixed to go to Login
         >
           <Text
             className="text-[#D32C1C] text-[30px] font-roboto-bold text-center"

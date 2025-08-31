@@ -99,13 +99,19 @@ const ViewPostScreen = () => {
   );
 
   const handleLikePress = async () => {
+    if (!post?.id) {
+      console.warn("Cannot like: post or post.id is undefined");
+      return;
+    }
+
     try {
+      const currentLikedState = liked;
       const newLiked = !liked;
       setLiked(newLiked);
       setLikesCount((prev) => (newLiked ? prev + 1 : prev - 1));
 
-      // Update Firestore
-      await toggleLike(post!.id, currentUserUid!, !newLiked);
+      // Update Firestore - pass the current state before the UI change
+      await toggleLike(post.id, currentUserUid!, currentLikedState);
     } catch (error) {
       // Revert UI changes if Firestore update fails
       setLiked(!liked);
@@ -123,8 +129,8 @@ const ViewPostScreen = () => {
       if (doc.exists()) {
         const postData = doc.data() as UserPost;
         setPost(postData);
-        setLiked(postData.likes.by.includes(currentUser?.uid || ""));
-        setLikesCount(postData.likes.count);
+        setLiked((postData?.likes?.by || []).includes(currentUser?.uid || ""));
+        setLikesCount(postData?.likes?.count || 0);
       }
     });
 
@@ -236,7 +242,7 @@ const ViewPostScreen = () => {
             <View style={styles.actions}>
               <TouchableOpacity
                 style={styles.actionButton}
-                onPress={handleLikePress}
+                // onPress={handleLikePress}
               >
                 {liked ? (
                   <AntDesign name="heart" color={"red"} size={17} />

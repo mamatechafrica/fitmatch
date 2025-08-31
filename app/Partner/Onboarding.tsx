@@ -178,7 +178,7 @@ const Onboarding = () => {
         } else {
           updatedImages = prevImages;
         }
-        dispatch(setPartnerImages(updatedImages));
+        dispatch(setPartnerImages(updatedImages.map((img) => img.uri)));
         return updatedImages;
       });
     }
@@ -239,7 +239,7 @@ const Onboarding = () => {
         } else {
           updated = processedVideos;
         }
-        dispatch(setPartnerVideos(updated));
+        dispatch(setPartnerVideos(updated.map((video) => video.uri)));
         return updated;
       });
     }
@@ -689,7 +689,7 @@ const Onboarding = () => {
           <View />
           <Animated.View
             entering={ZoomInDown.duration(600)}
-            className="bg-[#0f0e0c] p-4 h-[75vh] w-[95vw] rounded-t-[30px]"
+            className="bg-dark p-4 h-[75vh] w-[95vw] rounded-t-[30px]"
           >
             <KeyboardAwareScrollView>
               <View className="h-1 bg-white/30 self-center w-14 rounded-full my-2" />

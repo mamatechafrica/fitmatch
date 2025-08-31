@@ -8,11 +8,44 @@ import { Timestamp } from "firebase/firestore";
 dayjs.extend(relativeTime);
 dayjs.locale("fr"); // Set French as default locale
 
-export const getTimeAgo = (timestamp: Timestamp) => {
-  return dayjs(timestamp?.toDate()).fromNow(); // Will now output in French
+export const getTimeAgo = (timestamp: Timestamp | string) => {
+  let date;
+
+  if (typeof timestamp === "string") {
+    // Handle string date format
+    date = dayjs(timestamp);
+  } else if (timestamp && typeof timestamp.toDate === "function") {
+    // Handle Firestore Timestamp
+    date = dayjs(timestamp.toDate());
+  } else {
+    // Fallback for invalid data
+    console.warn("Invalid timestamp format:", timestamp);
+    return "Invalid date";
+  }
+
+  return date.fromNow(); // Will now output in French
 };
 
-export const calculateAge = (timestamp: Timestamp): number => {
-  const birthDate = dayjs(timestamp.toDate());
+export const calculateAge = (
+  timestamp: Timestamp | string | undefined
+): number => {
+  if (!timestamp) {
+    return 0;
+  }
+
+  let birthDate;
+
+  if (typeof timestamp === "string") {
+    // Handle string date format
+    birthDate = dayjs(timestamp);
+  } else if (timestamp && typeof timestamp.toDate === "function") {
+    // Handle Firestore Timestamp
+    birthDate = dayjs(timestamp.toDate());
+  } else {
+    // Fallback for invalid data
+    console.warn("Invalid timestamp format:", timestamp);
+    return 0;
+  }
+
   return dayjs().diff(birthDate, "year");
 };

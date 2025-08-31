@@ -1,9 +1,8 @@
 import { AntDesign } from "@expo/vector-icons";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { router } from "expo-router";
 import React from "react";
 import { Image, TouchableOpacity, View } from "react-native";
-import GearIcon from "../Icons/GearIcon";
-import HandShakeIcon from "../Icons/HandShakeIcon";
 
 const HeaderBar = () => {
   return (
@@ -20,11 +19,17 @@ const HeaderBar = () => {
         >
           <AntDesign name="plus" size={32} color={"white"} />
         </TouchableOpacity>
-        <TouchableOpacity hitSlop={8}>
-          <HandShakeIcon />
+        <TouchableOpacity
+          hitSlop={8}
+          onPress={() => router.navigate("/(root)/FavoritesScreen")}
+        >
+          <FontAwesome5 name="handshake" size={24} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity hitSlop={8}>
-          <GearIcon />
+        <TouchableOpacity
+          hitSlop={8}
+          onPress={() => router.navigate("/(root)/ProfileScreen")}
+        >
+          <AntDesign name="user" size={28} color={"white"} />
         </TouchableOpacity>
       </View>
     </View>

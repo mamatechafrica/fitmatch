@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.julianojosoa13.fitmatch",
+      "bundleIdentifier": "fit_match.test",
       "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
@@ -19,8 +19,12 @@
         "backgroundColor": "#0f0e0c"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.julianojosoa13.fitmatch",
-      "googleServicesFile": "./google-services.json"
+      "package": "fit_match.test",
+      "googleServicesFile": "./google-services.json",
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -28,8 +32,12 @@
       "favicon": "./assets/image/logo-minimalist.png"
     },
     "plugins": [
-      "@react-native-firebase/app",
-      "@react-native-firebase/auth",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.925031854161-i4sar4pmmlekjt4s9k0uiluiald83u79"
+        }
+      ],
       "expo-router",
       [
         "expo-splash-screen",
@@ -53,9 +61,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "9990ce12-074d-470a-afa3-1e9a6d8a0bdd"
+        "projectId": "bf3fa017-7a6e-4ddc-abb4-f5594c75997a"
       }
     },
-    "owner": "julianojosoa13"
+    "owner": "aldiske"
   }
 }

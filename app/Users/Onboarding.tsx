@@ -12,7 +12,7 @@ import {
 } from "@expo/vector-icons";
 import { BlurView } from "@react-native-community/blur";
 import * as ImagePicker from "expo-image-picker";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import * as VideoThumbnails from "expo-video-thumbnails";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -39,7 +39,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEmailAuth } from "@/customHooks/useEmailAuth";
 import { useHandleFormChange } from "@/customHooks/useHandleFormChange copy";
 import { frenchCities, frenchCountries } from "@/data/cities";
-import { createUserIfNotExists } from "@/helpers/firestore";
+import { createUserIfNotExists, updateUserData } from "@/helpers/firestore";
 import { setCreatingUserData } from "@/store/slices/authSlice";
 import { getAuth } from "firebase/auth";
 import {
@@ -107,6 +107,9 @@ export type PhotoVideoMediaType = {
 
 const Onboarding = () => {
   const dispatch = useDispatch();
+  const { editing } = useLocalSearchParams();
+  const isEditing = editing === "true";
+
   const creatingUserData = useSelector(
     (state: RootState) => state.auth.creatingUserData
   );
@@ -119,7 +122,7 @@ const Onboarding = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const [accepted, setAccepted] = useState(false);
+  const [accepted, setAccepted] = useState(isEditing); // Auto-accept when editing
   const [selectedVideo, setSelectedVideo] = useState(0);
   const [signUpForm, setSignUpForm] = useState({
     email: "",
@@ -214,8 +217,23 @@ const Onboarding = () => {
       setShowWelcome(false);
     }, 5000);
     setSelected(userData?.sex ?? initalValues.sex);
-    if (userData?.personalData === true) router.replace("/Users/SportChoice");
-    if (currentUser && showWelcome) {
+
+    // If editing mode, pre-populate form with existing user data
+    if (isEditing && userData) {
+      handleChange("nom", userData.nom || "");
+      handleChange("prenoms", userData.prenoms || "");
+      handleChange("ville", userData.ville || "");
+      handleChange("nationalite", userData.nationalite || "");
+      handleChange("pseudo", userData.pseudo || "");
+      if (userData.naissance) {
+        handleChange("naissance", userData.naissance);
+      }
+    }
+
+    if (userData?.personalData === true && !isEditing) {
+      router.replace("/Users/SportChoice");
+    }
+    if (currentUser && showWelcome && !isEditing) {
       Toast.show({
         type: "success",
         text1: "Bienvenue " + (currentUser.displayName ?? currentUser.email),
@@ -330,7 +348,21 @@ const Onboarding = () => {
     }
   };
   return (
-    <SafeAreaView className={`flex flex-1 bg-dark h-full-w-full gap-2`}>
+    <SafeAreaView className={`flex flex-1 bg-dark  h-full w-full gap-2`}>
+      {/* Back button for editing mode */}
+      {isEditing && (
+        <View className="px-4 pt-2">
+          <TouchableOpacity
+            onPress={() => router.push("/(root)/ProfileScreen")}
+            className="flex-row items-center"
+          >
+            <Text className="text-[#D32C1C] font-roboto text-[18px]">
+              ← Retour au profil
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {busy && (
         <View className="absolute flex-1 z-20 top-0 bottom-0 left-0 right-0 items-center justify-center bg-black/80">
           {/* <BlurView
@@ -470,7 +502,9 @@ const Onboarding = () => {
             }}
           >
             <Text className="font-roboto-bold">
-              {userData?.naissance?.toLocaleString().split(" ")[0]}
+              {userData?.naissance
+                ? new Date(userData.naissance).toLocaleDateString()
+                : ""}
             </Text>
             <Ionicons name={"calendar"} size={25} color={"rgba(0,0,0,0.7)"} />
           </TouchableOpacity>
@@ -485,7 +519,8 @@ const Onboarding = () => {
               onChange={({ date }) => {
                 setShowDatepicker(false);
 
-                handleChange("naissance", date);
+                const dateObj = parseDateType(date);
+                handleChange("naissance", dateObj.toISOString());
               }}
               styles={{
                 header: {
@@ -548,7 +583,7 @@ const Onboarding = () => {
           onRequestClose={() => setShowCityModal(false)}
         >
           <View className="flex-1 bg-black/50 justify-center items-center px-4">
-            <View className="bg-[#0f0e0c] w-full rounded-xl p-4 h-[80%]">
+            <View className="bg-dark w-full rounded-xl p-4 h-[80%]">
               <Text className="text-lg font-roboto-light mb-4 text-white uppercase">
                 Sélectionne ta ville
               </Text>
@@ -613,7 +648,7 @@ const Onboarding = () => {
           onRequestClose={() => setShowCountryModal(false)}
         >
           <View className="flex-1 bg-black/50 justify-center items-center px-4">
-            <View className="bg-[#0f0e0c] w-full rounded-xl p-4 h-[80%]">
+            <View className="bg-dark w-full rounded-xl p-4 h-[80%]">
               <Text className="text-lg font-roboto-light mb-4 text-white uppercase">
                 Sélectionne ta nationalité
               </Text>
@@ -657,8 +692,12 @@ const Onboarding = () => {
 
         <View className="bg-[#2E2C2C] px-6 py-2">
           <Text className="text-white tracking-[-0.3px] font-roboto-condensed text-[14px]">
-            Ajoutes tes photos{" "}
-            <Text className="text-red font-roboto-bold text-[20px]"> *</Text>
+            {isEditing
+              ? "Modifier tes photos (optionnel)"
+              : "Ajoutes tes photos"}{" "}
+            {!isEditing && (
+              <Text className="text-red font-roboto-bold text-[20px]"> *</Text>
+            )}
           </Text>
           <View className="flex-row items-center justify-between my-2">
             <TouchableOpacity
@@ -694,8 +733,12 @@ const Onboarding = () => {
 
         <View className="bg-[#2E2C2C] px-6 py-2">
           <Text className="text-white tracking-[-0.3px] font-roboto-condensed text-[14px]">
-            Ajoutes tes videos{" "}
-            <Text className="text-red font-roboto-bold text-[20px]"> *</Text>
+            {isEditing
+              ? "Modifier tes vidéos (optionnel)"
+              : "Ajoutes tes videos"}{" "}
+            {!isEditing && (
+              <Text className="text-red font-roboto-bold text-[20px]"> *</Text>
+            )}
           </Text>
 
           <View className="flex-row items-center justify-between my-2">
@@ -780,35 +823,39 @@ const Onboarding = () => {
             </View>
           </Modal>
         </View>
-        <TouchableOpacity
-          className="flex-row gap-x-2 items-center justify-center"
-          onPress={() => router.navigate("/Extras/CGU")}
-        >
-          <Text className="text-center text-white/50 tracking-[-0.3px] font-roboto-condensed-semibold mt-2 ml-4">
-            Conditions générales d&apos;utilisation
-          </Text>
-          <Octicons
-            name="link-external"
-            color={"rgba(255,255,255,0.5)"}
-            size={22}
-          />
-        </TouchableOpacity>
-        <View className="items-center justify-center my-2 flex-row ">
-          <Switch
-            trackColor={{ true: "#d83335", false: "#ddd" }}
-            thumbColor={"white"}
-            value={accepted}
-            onChange={() => setAccepted(!accepted)}
-          />
-          <Text className="text-white text-center tracking-[-0.3px] font-roboto-condensed text-[14px]">
-            J&apos;accepte les CGU
-          </Text>
-        </View>
+        {!isEditing && (
+          <>
+            <TouchableOpacity
+              className="flex-row gap-x-2 items-center justify-center"
+              onPress={() => router.navigate("/Extras/CGU")}
+            >
+              <Text className="text-center text-white/50 tracking-[-0.3px] font-roboto-condensed-semibold mt-2 ml-4">
+                Conditions générales d&apos;utilisation
+              </Text>
+              <Octicons
+                name="link-external"
+                color={"rgba(255,255,255,0.5)"}
+                size={22}
+              />
+            </TouchableOpacity>
+            <View className="items-center justify-center my-2 flex-row ">
+              <Switch
+                trackColor={{ true: "#d83335", false: "#ddd" }}
+                thumbColor={"white"}
+                value={accepted}
+                onChange={() => setAccepted(!accepted)}
+              />
+              <Text className="text-white text-center tracking-[-0.3px] font-roboto-condensed text-[14px]">
+                J&apos;accepte les CGU
+              </Text>
+            </View>
+          </>
+        )}
 
         <TouchableOpacity
           className="mt-2 self-center items-center justify-center rounded-[16] bg-[#D32C1C] py-2 px-8"
           onPress={async () => {
-            if (!accepted) {
+            if (!accepted && !isEditing) {
               Toast.show({
                 type: "error",
                 text1: "CGU",
@@ -828,12 +875,14 @@ const Onboarding = () => {
               userData?.naissance === "" ||
               userData?.ville === "" ||
               userData.nationalite === "" ||
-              selectedImages.length === 0
+              (!isEditing && selectedImages.length === 0) // Only require photos for new signups
             ) {
               Toast.show({
                 type: "info",
                 text1: "Champs requis",
-                text2: "Veuillez remplir tous les champs requis",
+                text2: isEditing
+                  ? "Veuillez remplir tous les champs requis"
+                  : "Veuillez remplir tous les champs requis et ajouter au moins une photo",
               });
               return;
             }
@@ -846,37 +895,79 @@ const Onboarding = () => {
             setBusy(true);
 
             try {
-              // Upload media files with their full structure
-              const [uploadedPhotos, uploadedVideos] = await Promise.all([
-                uploadMedia(
+              // Upload media files only if there are new ones, or skip if editing
+              let uploadedPhotos: PhotoVideoMediaType[] = [];
+              let uploadedVideos: PhotoVideoMediaType[] = [];
+
+              if (selectedImages.length > 0) {
+                uploadedPhotos = await uploadMedia(
                   getAuth().currentUser!.uid,
                   selectedImages,
                   "mesPhotos"
-                ),
-                uploadMedia(
+                );
+              }
+
+              if (selectedVideos.length > 0) {
+                uploadedVideos = await uploadMedia(
                   getAuth().currentUser!.uid,
                   selectedVideos,
                   "mesVideos"
-                ),
-              ]);
+                );
+              }
 
-              // Update user data with the complete media objects
-              handleChange("mesPhotos", uploadedPhotos);
-              handleChange("mesVideos", uploadedVideos);
-              handleChange("profilePicUrl", uploadedPhotos[0].uri);
+              // Update user data - only update media if new ones were uploaded
+              if (uploadedPhotos.length > 0) {
+                handleChange("mesPhotos", uploadedPhotos);
+                handleChange("profilePicUrl", uploadedPhotos[0].uri);
+              }
+              if (uploadedVideos.length > 0) {
+                handleChange("mesVideos", uploadedVideos);
+              }
+
               handleChange("personalData", true);
               handleChange("acceptCGU", true);
 
               console.log("uploaded photos >>> ", uploadedPhotos);
               console.log("uploaded videos >>> ", uploadedVideos);
 
-              // Create/update user document
-              await createUserIfNotExists("binome", userData);
+              // Create/update user document based on mode
+              if (isEditing) {
+                // When editing, only update the changed fields
+                const updateData: any = {
+                  nom: userData.nom,
+                  prenoms: userData.prenoms,
+                  naissance: userData.naissance,
+                  sex: userData.sex,
+                  ville: userData.ville,
+                  nationalite: userData.nationalite,
+                  personalData: true,
+                };
+
+                // Add photos/videos only if they were uploaded
+                if (uploadedPhotos.length > 0) {
+                  updateData.mesPhotos = uploadedPhotos;
+                  updateData.profilePicUrl = uploadedPhotos[0].uri;
+                }
+                if (uploadedVideos.length > 0) {
+                  updateData.mesVideos = uploadedVideos;
+                }
+
+                await updateUserData(updateData);
+              } else {
+                // When creating new user, use the full creation logic
+                await createUserIfNotExists("binome", userData);
+              }
 
               setShowOverlay(false);
               setBusy(false);
               dispatch(setCreatingUserData(false));
-              router.navigate("/Users/SportChoice");
+
+              // Navigate based on mode
+              if (isEditing) {
+                router.push("/(root)/ProfileScreen"); // Go back to profile screen
+              } else {
+                router.navigate("/Users/SportChoice");
+              }
             } catch (error) {
               console.error("Upload error:", error);
               setShowOverlay(false);
@@ -892,7 +983,11 @@ const Onboarding = () => {
           disabled={busy}
         >
           <Text className="text-white font-roboto-condensed tracking-[-0.3px] text-[20px]">
-            {busy ? "Traitement..." : "Je continue"}
+            {busy
+              ? "Traitement..."
+              : isEditing
+              ? "Mettre à jour"
+              : "Je continue"}
           </Text>
         </TouchableOpacity>
       </KeyboardAwareScrollView>
@@ -939,7 +1034,7 @@ const Onboarding = () => {
           <View />
           <Animated.View
             entering={ZoomInDown.duration(600)}
-            className="bg-[#0f0e0c] p-4 h-[75vh] w-[95vw] rounded-t-[30px]"
+            className="bg-dark p-4 h-[75vh] w-[95vw] rounded-t-[30px]"
           >
             <KeyboardAwareScrollView>
               <View className="h-1 bg-white/30 self-center w-14 rounded-full my-2" />

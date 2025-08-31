@@ -268,3 +268,29 @@ const createNotification = async (
     console.error("Error creating notification:", error);
   }
 };
+
+// Helper function to get user's matches
+export const getUserMatches = async () => {
+  try {
+    const currentUserId = auth.currentUser?.uid;
+    if (!currentUserId) {
+      throw new Error("User not authenticated");
+    }
+
+    const matchesQuery = query(
+      collection(db, "matches"),
+      where(`userIds.${currentUserId}`, "==", true)
+    );
+
+    const matchesSnapshot = await getDocs(matchesQuery);
+    const matches = matchesSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    return matches;
+  } catch (error) {
+    console.error("Error fetching matches:", error);
+    throw error;
+  }
+};

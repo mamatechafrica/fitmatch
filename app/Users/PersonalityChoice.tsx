@@ -2,7 +2,7 @@ import ChevronDownIcon from "@/components/Icons/ChevronDownIcon";
 import { useHandleFormChange } from "@/customHooks/useHandleFormChange copy";
 import { updateUserData } from "@/helpers/firestore";
 import { RootState } from "@/store/rootReducer";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -47,16 +47,22 @@ const PersonalityChoice = () => {
   const [loading, setLoading] = useState(false);
   const userData = useSelector((state: RootState) => state.user.data);
   const handleChange = useHandleFormChange();
+  const params = useLocalSearchParams();
+  const isEditingProfile = params.editing === "true";
 
   const showChoiceText = () => {
     return choiceTexts[selected];
   };
 
   useEffect(() => {
-    if (userData?.personality && userData.personality !== "") {
+    if (
+      !isEditingProfile &&
+      userData?.personality &&
+      userData.personality !== ""
+    ) {
       router.replace("/Users/WeekendVibes");
     }
-  }, []);
+  }, [isEditingProfile, userData.personality]);
 
   return (
     <SafeAreaView className={`flex flex-1 bg-dark h-full-w-full gap-2`}>
@@ -131,7 +137,12 @@ const PersonalityChoice = () => {
             handleChange("personality", choiceTexts[selected]);
             await updateUserData({ personality: choiceTexts[selected] });
             setLoading(false);
-            router.navigate("/Users/WeekendVibes");
+
+            if (isEditingProfile) {
+              router.push("/(root)/ProfileScreen");
+            } else {
+              router.navigate("/Users/WeekendVibes");
+            }
           }}
         >
           <Text className="text-white font-roboto-condensed tracking-[-0.3px] text-[20px]">

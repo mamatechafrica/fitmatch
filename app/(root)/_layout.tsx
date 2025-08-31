@@ -1,12 +1,7 @@
-import BellIcon from "@/components/Icons/TabBar/BellIcon";
-import HeartIcon from "@/components/Icons/TabBar/HeartIcon";
-import HomeIcon from "@/components/Icons/TabBar/HomeIcon";
-import MessageBubbleIcon from "@/components/Icons/TabBar/MessageBubbleIcon";
-import ProfileIcon from "@/components/Icons/TabBar/ProfileIcon";
-import SearchIcon from "@/components/Icons/TabBar/SearchIcon";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
 import React from "react";
-import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const TabsLayout = () => {
@@ -24,6 +19,8 @@ const TabsLayout = () => {
           borderColor: "white",
           overflow: "hidden",
         },
+        tabBarActiveTintColor: "#FF0000", // Red color for focused state
+        tabBarInactiveTintColor: "#ffffff",
 
         // tabBarBackground: () => (
         //   <View className="h-[60] w-full overflow-hidden">
@@ -42,20 +39,16 @@ const TabsLayout = () => {
       <Tabs.Screen
         name="Home"
         options={{
-          tabBarIcon: () => {
-            return (
-              <View className="mt-4">
-                <HomeIcon />
-              </View>
-            );
+          tabBarIcon: ({ focused, color }) => {
+            return <Ionicons name="home" size={24} color={color} />;
           },
         }}
       />
       <Tabs.Screen
         name="SearchScreen"
         options={{
-          tabBarIcon: () => {
-            return <SearchIcon />;
+          tabBarIcon: ({ focused, color }) => {
+            return <Ionicons name="search-sharp" size={24} color={color} />;
           },
         }}
       />
@@ -63,8 +56,8 @@ const TabsLayout = () => {
       <Tabs.Screen
         name="NotificationsScreen"
         options={{
-          tabBarIcon: () => {
-            return <BellIcon />;
+          tabBarIcon: ({ focused, color }) => {
+            return <FontAwesome5 name="bell" size={24} color={color} />;
           },
         }}
       />
@@ -72,16 +65,22 @@ const TabsLayout = () => {
       <Tabs.Screen
         name="FavoritesScreen"
         options={{
-          tabBarIcon: () => {
-            return <HeartIcon />;
+          tabBarIcon: ({ focused, color }) => {
+            return <FontAwesome5 name="heart" size={24} color={color} />;
           },
         }}
       />
       <Tabs.Screen
         name="MessageScreen"
         options={{
-          tabBarIcon: () => {
-            return <MessageBubbleIcon />;
+          tabBarIcon: ({ focused, color }) => {
+            return (
+              <Ionicons
+                name="chatbubble-ellipses-outline"
+                size={24}
+                color={color}
+              />
+            );
           },
         }}
       />
@@ -89,8 +88,8 @@ const TabsLayout = () => {
       <Tabs.Screen
         name="ProfileScreen"
         options={{
-          tabBarIcon: () => {
-            return <ProfileIcon />;
+          tabBarIcon: ({ focused, color }) => {
+            return <FontAwesome5 name="user" size={24} color={color} />;
           },
         }}
       />

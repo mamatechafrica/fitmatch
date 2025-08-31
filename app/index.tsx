@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/rootReducer";
 import { setCreatingUserData, setUser } from "../store/slices/authSlice";
+import { serializeUser } from "@/helpers/serialization";
 
 export default function Index() {
   const router = useRouter();
@@ -22,7 +23,8 @@ export default function Index() {
     const unsubscribe = onAuthStateChanged(auth, (currentUser: User | null) => {
       console.log("Auth state changed >>", currentUser);
       setIsLoading(false);
-      dispatch(setUser(currentUser));
+      const serializedUser = serializeUser(currentUser);
+      dispatch(setUser(serializedUser as User | null));
 
       // Unsubscribe immediately if user is found
       if (currentUser) {

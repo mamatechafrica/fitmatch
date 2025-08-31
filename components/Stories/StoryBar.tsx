@@ -45,9 +45,9 @@ const StoryBar = () => {
         >
           <PlusIconWhite />
         </TouchableOpacity>
-        {userList?.map((user) => (
+        {userList?.map((user, index) => (
           <UserProfile
-            key={user.uid}
+            key={`${user.uid}-${index}`}
             username={user.prenoms}
             profileImg={
               user.profilePicUrl

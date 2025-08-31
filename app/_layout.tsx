@@ -1,4 +1,3 @@
-// app/_layout.tsx
 import useUserActive from "@/customHooks/useUserActive";
 import { persistor, store } from "@/store/store";
 import {
@@ -145,7 +144,6 @@ export default function RootLayout() {
           <GestureHandlerRootView style={{ flex: 1 }}>
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="index" />
-              {/* Define your Offline404 screen */}
               <Stack.Screen name="Offline404" />
             </Stack>
             <Toast />

@@ -3,23 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>300620800683-2ad4onjfamgc49sq30fh5ir47kikjoul.apps.googleusercontent.com</string>
+	<string>925031854161-i8sg1decnm7u0kuia9nhpd46c59q27vm.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.300620800683-2ad4onjfamgc49sq30fh5ir47kikjoul</string>
+	<string>com.googleusercontent.apps.925031854161-i8sg1decnm7u0kuia9nhpd46c59q27vm</string>
 	<key>ANDROID_CLIENT_ID</key>
-	<string>300620800683-amp5fdjr77n1ao7oiht0ohj26qiqmglg.apps.googleusercontent.com</string>
+	<string>925031854161-cvgvrla42plcqfomaoo3pkvq4aobnevm.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyB_l3sUIDBTQpW9yU3I_jPS2scWNJr6IJs</string>
+	<string>AIzaSyATN5W3LWa92apMSf2lpKZSzrUnZfSI_cQ</string>
 	<key>GCM_SENDER_ID</key>
-	<string>300620800683</string>
+	<string>925031854161</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.julianojosoa13.fitmatch</string>
+	<string>mt-fitmatch</string>
 	<key>PROJECT_ID</key>
-	<string>f-i-t-match-po1xi1</string>
+	<string>fit-match-6930a</string>
 	<key>STORAGE_BUCKET</key>
-	<string>f-i-t-match-po1xi1.firebasestorage.app</string>
+	<string>fit-match-6930a.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,8 +31,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:300620800683:ios:7d363ef7a72b726f264dee</string>
+	<string>1:925031854161:ios:0773aca33a0876afc88870</string>
 	<key>DATABASE_URL</key>
-	<string>https://f-i-t-match-po1xi1-default-rtdb.europe-west1.firebasedatabase.app</string>
+	<string>https://fit-match-6930a-default-rtdb.europe-west1.firebasedatabase.app</string>
 </dict>
 </plist>

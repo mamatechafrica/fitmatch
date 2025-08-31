@@ -1,7 +1,7 @@
 import { useHandleFormChange } from "@/customHooks/useHandleFormChange copy";
 import { updateUserData } from "@/helpers/firestore";
 import { RootState } from "@/store/rootReducer";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 
 import {
@@ -22,13 +22,18 @@ const DietChoie = () => {
   const userData = useSelector((state: RootState) => state.user.data);
   const [isLoading, setIsLoading] = useState(false);
   const handleChange = useHandleFormChange();
+  const params = useLocalSearchParams();
+  const isEditing = params.editing === "true";
 
   useEffect(() => {
-    if (userData?.diet && userData?.diet !== "") {
-      console.log("diet ", userData?.diet);
-      router.replace("/Users/PersonalityChoice");
+    if (!isEditing && userData?.diet && userData?.diet !== "") {
+      if (userData?.personality && userData?.personality.length > 0) {
+        router.replace("/Users/WeekendVibes");
+      } else {
+        router.replace("/Users/PersonalityChoice");
+      }
     }
-  }, []);
+  }, [isEditing, userData?.diet, userData?.personality]);
 
   useEffect(() => {
     switch (selected) {
@@ -57,6 +62,21 @@ const DietChoie = () => {
 
   return (
     <SafeAreaView className={`flex flex-1 bg-dark h-full-w-full gap-2`}>
+      {/* Header with back button for editing */}
+      {isEditing && (
+        <View className="flex-row items-center px-4 py-2 border-b border-gray-800">
+          <TouchableOpacity
+            onPress={() => router.push("/(root)/ProfileScreen")}
+            className="p-2 mr-3"
+          >
+            <Text className="text-white text-lg">←</Text>
+          </TouchableOpacity>
+          <Text className="text-white text-lg font-semibold">
+            Modifier le régime
+          </Text>
+        </View>
+      )}
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         className="flex-1"
@@ -216,11 +236,17 @@ const DietChoie = () => {
             handleChange("diet", dietChoice);
             await updateUserData({ diet: dietChoice });
             setIsLoading(false);
-            router.navigate("/Users/PersonalityChoice");
+
+            // Check if user is editing existing profile or in onboarding flow
+            if (isEditing) {
+              router.push("/(root)/ProfileScreen"); // Return to profile screen
+            } else {
+              router.navigate("/Users/PersonalityChoice"); // Continue onboarding
+            }
           }}
         >
           <Text className="text-white font-roboto-condensed tracking-[-0.3px] text-[20px]">
-            On continue !
+            {isEditing ? "Sauvegarder" : "On continue !"}
           </Text>
           {isLoading && <ActivityIndicator color={"white"} />}
         </TouchableOpacity>
